@@ -1,17 +1,29 @@
 package models
 
-type DuckdbReleases = map[string]DuckdbRelease
+type Releases = map[string]Release
 
-type DuckdbRelease struct {
-	Version   string   `json:"version"`
-	Name      string   `json:"name"`
-	Platforms Platform `json:"platforms"`
+type Release struct {
+	Version   string    `json:"version"`
+	Name      string    `json:"name"`
+	Platforms Platforms `json:"platforms"`
 }
 
-type Platform = map[PlatformType]Architecture
+type Platforms = map[PlatformType]Architectures
 
-type Architecture = map[ArchitectureType]ArchitectureRelease
+type Architectures = map[ArchitectureType]ArchitectureReleaseInformation
 
-type ArchitectureRelease struct {
+type ArchitectureReleaseInformation struct {
 	DownloadUrl string `json:"downloadUrl"`
 }
+
+type VersionName = string
+type RelativeVersionLocation = string
+type VersionDict = map[VersionName]RelativeVersionLocation
+
+// List of tuples
+
+type VersionInfo struct {
+	VersionName             VersionName
+	RelativeVersionLocation RelativeVersionLocation
+}
+type VersionList = []VersionInfo

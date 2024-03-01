@@ -7,10 +7,11 @@ import (
 
 func New() Client {
 	return &ApiClient{
-		Host: "http://localhost:8080",
+		Host: "http://localhost:8000",
 		Client: &http.Client{
 			Timeout: 5 * time.Second,
 		},
-		VersionPath: "/versions/index.json",
+		VersionsPath:    "/versions/versions.json",
+		VersionBasePath: "/versions/tags",
 	}
 }
