@@ -21,3 +21,4 @@
 go.work
 .idea
 versions
+__pycache__
