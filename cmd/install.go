@@ -2,8 +2,9 @@ package cmd
 
 import (
 	"duckdb-version-manager/client"
+	"duckdb-version-manager/config"
+	"duckdb-version-manager/utils"
 	"github.com/spf13/cobra"
-	"log"
 )
 
 var installCmd = &cobra.Command{
@@ -11,16 +12,28 @@ var installCmd = &cobra.Command{
 	Short: "Install a specific version of DuckDB",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		apiClient := client.New()
 		version := args[0]
 
-		possibleVersions, err := client.New().ListAllReleasesDict()
+		possibleVersions, err := apiClient.ListAllReleasesDict()
 		if err != nil {
-			log.Fatalf("Error: %s", err)
+			utils.ExitWithError(err)
 		}
-		if _, ok := possibleVersions[version]; !ok {
-			log.Fatalf("Version '%s' not found", version)
+		versionLocation, ok := possibleVersions[version]
+		if !ok {
+			utils.ExitWith("Version '%s' not found", version)
 		}
 
+		resolvedVersion, err := apiClient.GetReleaseWithLocation(versionLocation)
+		if err != nil {
+			utils.ExitWithError(err)
+		}
+
+		downloadUrl := utils.GetDownloadUrlFrom(resolvedVersion)
+		err = utils.DownloadUrlTo(downloadUrl, config.InstallDir+"/"+resolvedVersion.Version)
+		if err != nil {
+			utils.ExitWithError(err)
+		}
 	},
 }
 

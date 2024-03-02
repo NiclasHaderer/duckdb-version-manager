@@ -1,9 +1,9 @@
 package models
 
-type PlatformType = int
+type PlatformType = string
 
 const (
-	PlatformWindows PlatformType = iota
-	PlatformMac     PlatformType = iota
-	PlatformLinux   PlatformType = iota
+	PlatformWindows PlatformType = "PlatformWindows"
+	PlatformMac     PlatformType = "PlatformMac"
+	PlatformLinux   PlatformType = "PlatformLinux"
 )

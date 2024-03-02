@@ -17,10 +17,9 @@ type Client interface {
 }
 
 type ApiClient struct {
-	Host            string
-	Client          *http.Client
-	VersionsPath    string
-	VersionBasePath string
+	Host     string
+	Client   *http.Client
+	BasePath string
 }
 
 func (receiver ApiClient) GetAllReleases() (models.Releases, error) {
@@ -42,7 +41,7 @@ func (receiver ApiClient) GetAllReleases() (models.Releases, error) {
 }
 
 func (receiver ApiClient) ListAllReleasesDict() (models.VersionDict, error) {
-	url := receiver.Host + receiver.VersionsPath
+	url := receiver.Host + receiver.BasePath + "/versions.json"
 	resp, err := receiver.Client.Get(url)
 	if err != nil {
 		return nil, err
@@ -82,7 +81,7 @@ func (receiver ApiClient) GetRelease(version string) (*models.Release, error) {
 }
 
 func (receiver ApiClient) GetReleaseWithLocation(versionPath string) (*models.Release, error) {
-	url := receiver.Host + receiver.VersionBasePath + "/" + versionPath
+	url := receiver.Host + receiver.BasePath + "/" + versionPath
 
 	resp, err := receiver.Client.Get(url)
 	defer resp.Body.Close()

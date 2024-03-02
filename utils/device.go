@@ -2,7 +2,6 @@ package utils
 
 import (
 	"duckdb-version-manager/models"
-	"log"
 	"runtime"
 )
 
@@ -27,8 +26,8 @@ func getPlatform() models.PlatformType {
 	} else if os == "windows" {
 		return models.PlatformWindows
 	}
-	log.Fatalf("Unsupported platform: %s", os)
-	return -1
+	ExitWith("Unsupported platform: %s", os)
+	return ""
 }
 
 func getArchitecture() models.ArchitectureType {
@@ -38,6 +37,6 @@ func getArchitecture() models.ArchitectureType {
 	} else if arch == "x86" {
 		return models.ArchitectureX86
 	}
-	log.Fatalf("Unsupported architecture: %s", arch)
-	return -1
+	ExitWith("Unsupported architecture: %s", arch)
+	return ""
 }

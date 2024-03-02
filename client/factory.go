@@ -11,7 +11,6 @@ func New() Client {
 		Client: &http.Client{
 			Timeout: 5 * time.Second,
 		},
-		VersionsPath:    "/versions/versions.json",
-		VersionBasePath: "/versions/tags",
+		BasePath: "/versions",
 	}
 }
