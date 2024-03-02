@@ -16,14 +16,14 @@ type ArchitectureReleaseInformation struct {
 	DownloadUrl string `json:"downloadUrl"`
 }
 
-type VersionName = string
+type Version = string
 type RelativeVersionLocation = string
-type VersionDict = map[VersionName]RelativeVersionLocation
+type VersionDict = map[Version]RelativeVersionLocation
 
 // List of tuples
 
 type VersionInfo struct {
-	VersionName             VersionName
+	Version                 Version
 	RelativeVersionLocation RelativeVersionLocation
 }
 type VersionList = []VersionInfo

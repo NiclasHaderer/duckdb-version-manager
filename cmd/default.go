@@ -8,14 +8,9 @@ import (
 
 // defaultCmd represents the default command
 var defaultCmd = &cobra.Command{
-	Use:   "default",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Use:   "default [version]",
+	Short: "Set an already installed version of DuckDB as the default one",
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("default called")
 	},
@@ -23,14 +18,4 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(defaultCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// defaultCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// defaultCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

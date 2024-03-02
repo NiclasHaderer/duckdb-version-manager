@@ -2,6 +2,7 @@ package client
 
 import (
 	"duckdb-version-manager/models"
+	"duckdb-version-manager/utils"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 type Client interface {
 	GetAllReleases() (models.Releases, error)
 	GetRelease(version string) (*models.Release, error)
+	GetReleaseWithLocation(versionPath string) (*models.Release, error)
 	ListAllReleases() (models.VersionList, error)
 	ListAllReleasesDict() (models.VersionDict, error)
 }
@@ -22,30 +24,30 @@ type ApiClient struct {
 }
 
 func (receiver ApiClient) GetAllReleases() (models.Releases, error) {
-	url := receiver.Host + receiver.VersionsPath
-	resp, err := receiver.Client.Get(url)
-	defer resp.Body.Close()
+	releasesDict, err := receiver.ListAllReleasesDict()
 	if err != nil {
 		return nil, err
 	}
 
-	var releases models.VersionDict
-	err = json.NewDecoder(resp.Body).Decode(&releases)
-	if err != nil {
-		return nil, err
+	finalReleases := make(models.Releases)
+	for version, versionPath := range releasesDict {
+		release, err := receiver.GetReleaseWithLocation(versionPath)
+		if err != nil {
+			return nil, err
+		}
+		finalReleases[version] = *release
 	}
 
-	// TODO return not nil
-	return nil, nil
+	return finalReleases, nil
 }
 
 func (receiver ApiClient) ListAllReleasesDict() (models.VersionDict, error) {
 	url := receiver.Host + receiver.VersionsPath
 	resp, err := receiver.Client.Get(url)
-	defer resp.Body.Close()
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 
 	var releases models.VersionDict
 	err = json.NewDecoder(resp.Body).Decode(&releases)
@@ -57,14 +59,12 @@ func (receiver ApiClient) ListAllReleasesDict() (models.VersionDict, error) {
 }
 
 func (receiver ApiClient) ListAllReleases() (models.VersionList, error) {
-	_, err := receiver.ListAllReleasesDict()
+	result, err := receiver.ListAllReleasesDict()
 	if err != nil {
 		return nil, err
 	}
 
-	// TODO return not nil
-	//  https://github.com/hashicorp/go-version?tab=readme-ov-file for sorting the versions
-	return nil, nil
+	return utils.ToVersionList(result), nil
 }
 
 func (receiver ApiClient) GetRelease(version string) (*models.Release, error) {
@@ -78,6 +78,10 @@ func (receiver ApiClient) GetRelease(version string) (*models.Release, error) {
 		return nil, errors.New("version not found")
 	}
 
+	return receiver.GetReleaseWithLocation(versionPath)
+}
+
+func (receiver ApiClient) GetReleaseWithLocation(versionPath string) (*models.Release, error) {
 	url := receiver.Host + receiver.VersionBasePath + "/" + versionPath
 
 	resp, err := receiver.Client.Get(url)
