@@ -2,9 +2,18 @@
 
 ### Installation
 
-TODO
+For **MacOS** and **Linux**, run the following command in your terminal:
+
+```bash
+curl https://raw.githubusercontent.com/NiclasHaderer/duckdb-version-manager/main/install.sh -s | /bin/bash
+```
+
+For **Windows**, download the latest binary from
+the [releases page](https://github.com/NiclasHaderer/duckdb-version-manager/releases) and save it in *$HOME/.local/bin*.
+Then add *$HOME/.local/bin* to your PATH.
 
 ### Usage
+
 ```bash
 duck-vm --help
 
