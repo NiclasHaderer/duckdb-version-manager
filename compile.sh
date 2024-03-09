@@ -7,6 +7,7 @@ GOOS_ARRAY=("darwin" "darwin" "linux" "linux" "windows" "windows")
 GOARCH_ARRAY=("amd64" "arm64" "amd64" "arm" "amd64" "arm")
 
 # Create output directory
+rm -r $OUTPUT_DIR
 mkdir -p $OUTPUT_DIR
 
 # Loop through architectures

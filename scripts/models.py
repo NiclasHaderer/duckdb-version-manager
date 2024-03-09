@@ -1,5 +1,4 @@
-from enum import Enum, auto
-from typing import TypedDict
+from typing import TypedDict, Literal
 
 VersionList = dict[str, str]
 
@@ -8,27 +7,21 @@ class ArchitectureReleaseInformation(TypedDict):
     downloadUrl: str
 
 
-Architectures = dict[str, ArchitectureReleaseInformation]
+ArchitectureType = Literal["ArchitectureX86", "ArchitectureArm64", "ArchitectureUniversal"]
 
-Platforms = dict[str, Architectures]
+
+PlatformType = Literal["PlatformWindows", "PlatformMac", "PlatformLinux"]
+
+
+Architectures = dict[ArchitectureType, ArchitectureReleaseInformation]
+
+Platforms = dict[PlatformType, Architectures]
 
 
 class Release(TypedDict):
     version: str
     name: str
     platforms: Platforms
-
-
-class ArchitectureType(Enum):
-    ArchitectureX86 = auto()
-    ArchitectureArm64 = auto()
-    ArchitectureUniversal = auto()
-
-
-class PlatformType(Enum):
-    PlatformWindows = auto()
-    PlatformMac = auto()
-    PlatformLinux = auto()
 
 
 class AssetInformation(TypedDict):

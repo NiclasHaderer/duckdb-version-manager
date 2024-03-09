@@ -35,5 +35,6 @@
   "v0.1.3": "tags/v0.1.3.json",
   "v0.1.2": "tags/v0.1.2.json",
   "v0.1.1": "tags/v0.1.1.json",
-  "v0.1.0": "tags/v0.1.0.json"
+  "v0.1.0": "tags/v0.1.0.json",
+  "nightly": "tags/nightly.json"
 }

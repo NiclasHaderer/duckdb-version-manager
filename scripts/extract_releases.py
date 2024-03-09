@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Literal
 
 import github.Auth
+import httpx
 from github import Github
 from github.GitRelease import GitRelease
 from github.PaginatedList import PaginatedList
@@ -18,6 +19,7 @@ from scripts.models import (
     ArchitectureType,
     PlatformType,
 )
+from scripts.nightly import NIGHTLY_RELEASE
 
 VERSIONS_BASE_FOLDER = Path(__file__).parent.parent / "versions"
 VERSIONS_INDIVIDUAL_FOLDER = VERSIONS_BASE_FOLDER / "tags"
@@ -47,21 +49,21 @@ def get_asset_type_from_name(asset_name: str, mode: Literal["duck-vm", "duck-db"
 
     architecture: ArchitectureType
     if "amd64" in asset_name:
-        architecture = ArchitectureType.ArchitectureX86
+        architecture = "ArchitectureX86"
     elif "aarch64" in asset_name or "arm64" in asset_name:
-        architecture = ArchitectureType.ArchitectureArm64
+        architecture = "ArchitectureArm64"
     elif "universal" in asset_name:
-        architecture = ArchitectureType.ArchitectureUniversal
+        architecture = "ArchitectureUniversal"
     else:
         return None
 
     platform: PlatformType
     if "windows" in asset_name:
-        platform = PlatformType.PlatformWindows
+        platform = "PlatformWindows"
     elif "osx" in asset_name or "darwin" in asset_name:
-        platform = PlatformType.PlatformMac
+        platform = "PlatformMac"
     elif "linux" in asset_name:
-        platform = PlatformType.PlatformLinux
+        platform = "PlatformLinux"
     else:
         return None
 
@@ -86,7 +88,7 @@ def save_duckdb_releases():
             asset_info = get_asset_type_from_name(asset.name, "duck-db")
             if asset_info is None:
                 continue
-            serializable_release["platforms"][asset_info["platform"].name][asset_info["architecture"].name] = {
+            serializable_release["platforms"][asset_info["platform"]][asset_info["architecture"]] = {
                 "downloadUrl": asset.browser_download_url
             }
 
@@ -96,8 +98,20 @@ def save_duckdb_releases():
         with open(VERSIONS_INDIVIDUAL_FOLDER / f"{tag_name}.json", "w") as f:
             f.write(json.dumps(serializable_release, indent=2))
 
+    with open(VERSIONS_INDIVIDUAL_FOLDER / f"nightly.json", "w") as f:
+        f.write(json.dumps(NIGHTLY_RELEASE, indent=2))
+
+    version_list["nightly"] = "tags/nightly.json"
+
     with open(VERSIONS_BASE_FOLDER / "versions.json", "w") as f:
         f.write(json.dumps(version_list, indent=2))
+
+
+def validate_nightly_urls(nightly: Release):
+    for platform, architectures in nightly["platforms"].items():
+        for architecture, info in architectures.items():
+            if httpx.get(info["downloadUrl"], follow_redirects=True).status_code != 200:
+                raise ValueError(f"URL {info['downloadUrl']} is not valid")
 
 
 def save_latest_duck_vm_release():
@@ -117,7 +131,7 @@ def save_latest_duck_vm_release():
         asset_info = get_asset_type_from_name(asset.name, "duck-vm")
         if asset_info is None:
             continue
-        serializable_release["platforms"][asset_info["platform"].name][asset_info["architecture"].name] = {
+        serializable_release["platforms"][asset_info["platform"]][asset_info["architecture"]] = {
             "downloadUrl": asset.browser_download_url
         }
 
@@ -126,6 +140,7 @@ def save_latest_duck_vm_release():
 
 
 def main():
+    validate_nightly_urls(NIGHTLY_RELEASE)
     save_latest_duck_vm_release()
     save_duckdb_releases()
 

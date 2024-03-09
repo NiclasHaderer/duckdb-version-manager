@@ -15,6 +15,13 @@ func toVersionList(dict models.VersionDict) models.VersionList {
 
 	// Sort the version list
 	sort.Slice(versionList, func(i, j int) bool {
+		if versionList[i].Version == "nightly" {
+			return true
+		}
+		if versionList[j].Version == "nightly" {
+			return false
+
+		}
 		v1, _ := version.NewVersion(versionList[i].Version)
 		v2, _ := version.NewVersion(versionList[j].Version)
 
