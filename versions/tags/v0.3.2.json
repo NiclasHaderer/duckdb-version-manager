@@ -1,0 +1,21 @@
+{
+  "version": "v0.3.2",
+  "name": "0.3.2 Preview Release \"Gibberifrons\"",
+  "platforms": {
+    "PlatformLinux": {
+      "ArchitectureX86": {
+        "downloadUrl": "https://github.com/duckdb/duckdb/releases/download/v0.3.2/duckdb_cli-linux-amd64.zip"
+      }
+    },
+    "PlatformMac": {
+      "ArchitectureX86": {
+        "downloadUrl": "https://github.com/duckdb/duckdb/releases/download/v0.3.2/duckdb_cli-osx-amd64.zip"
+      }
+    },
+    "PlatformWindows": {
+      "ArchitectureX86": {
+        "downloadUrl": "https://github.com/duckdb/duckdb/releases/download/v0.3.2/duckdb_cli-windows-amd64.zip"
+      }
+    }
+  }
+}

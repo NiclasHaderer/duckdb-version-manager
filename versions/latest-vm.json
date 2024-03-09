@@ -1,0 +1,24 @@
+{
+  "version": "v0.0.1",
+  "name": "Version 0.0.1",
+  "platforms": {
+    "PlatformMac": {
+      "ArchitectureX86": {
+        "downloadUrl": "https://github.com/NiclasHaderer/duckdb-version-manager/releases/download/v0.0.1/duck-vm-darwin-amd64"
+      },
+      "ArchitectureArm64": {
+        "downloadUrl": "https://github.com/NiclasHaderer/duckdb-version-manager/releases/download/v0.0.1/duck-vm-darwin-arm64"
+      }
+    },
+    "PlatformLinux": {
+      "ArchitectureX86": {
+        "downloadUrl": "https://github.com/NiclasHaderer/duckdb-version-manager/releases/download/v0.0.1/duck-vm-linux-amd64"
+      }
+    },
+    "PlatformWindows": {
+      "ArchitectureX86": {
+        "downloadUrl": "https://github.com/NiclasHaderer/duckdb-version-manager/releases/download/v0.0.1/duck-vm-windows-amd64"
+      }
+    }
+  }
+}
