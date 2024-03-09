@@ -20,6 +20,5 @@
 # Go workspace file
 go.work
 .idea
-versions
 __pycache__
 bin

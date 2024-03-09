@@ -27,7 +27,7 @@ func InstallVersion(version string) error {
 	if err != nil {
 		return err
 	}
-	err = DownloadUrlTo(downloadUrl, config.VersionDir+"/"+resolvedVersion.Version)
+	err = DownloadUrlTo(downloadUrl, config.VersionDir+"/"+resolvedVersion.Version, true)
 	if err != nil {
 		return err
 	}

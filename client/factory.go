@@ -7,7 +7,7 @@ import (
 
 func New() Client {
 	return &ApiClient{
-		Host: "http://localhost:8000",
+		Host: "https://raw.githubusercontent.com/NiclasHaderer/duckdb-version-manager/main/",
 		Client: &http.Client{
 			Timeout: 5 * time.Second,
 		},

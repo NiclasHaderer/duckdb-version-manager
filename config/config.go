@@ -11,6 +11,7 @@ var VersionDir string
 
 var InstallDir string
 var DuckDBName = "duckdb"
+var DuckVMName = "duck-vm"
 
 func init() {
 	homeDir, err := os.UserHomeDir()

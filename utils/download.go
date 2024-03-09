@@ -13,19 +13,7 @@ import (
 	"time"
 )
 
-func DownloadUrlTo(url string, dest string) error {
-	httpClient := &http.Client{Timeout: 5 * time.Second}
-	resp, err := httpClient.Get(url)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-
+func saveZip(body []byte, dest string) error {
 	zipReader, err := zip.NewReader(bytes.NewReader(body), int64(len(body)))
 	if err != nil {
 		return err
@@ -50,6 +38,31 @@ func DownloadUrlTo(url string, dest string) error {
 				return err
 			}
 		}
+	}
+	return nil
+}
+
+func DownloadUrlTo(url string, dest string, isZip bool) error {
+	httpClient := &http.Client{Timeout: 5 * time.Second}
+	resp, err := httpClient.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if isZip {
+		err = saveZip(body, dest)
+	} else {
+		err = os.WriteFile(dest, body, 0700)
+	}
+
+	if err != nil {
+		return err
 	}
 
 	fmt.Printf("Downloaded %s to %s\n", url, dest)

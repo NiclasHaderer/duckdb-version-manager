@@ -13,6 +13,7 @@ type Client interface {
 	GetReleaseWithLocation(versionPath string) (*models.Release, error)
 	ListAllReleases() (models.VersionList, error)
 	ListAllReleasesDict() (models.VersionDict, error)
+	LatestDuckVmRelease() (*models.Release, error)
 }
 
 type ApiClient struct {
@@ -83,10 +84,28 @@ func (receiver ApiClient) GetReleaseWithLocation(versionPath string) (*models.Re
 	url := receiver.Host + receiver.BasePath + "/" + versionPath
 
 	resp, err := receiver.Client.Get(url)
-	defer resp.Body.Close()
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
+
+	var release models.Release
+	err = json.NewDecoder(resp.Body).Decode(&release)
+	if err != nil {
+		return nil, err
+	}
+
+	return &release, nil
+}
+
+func (receiver ApiClient) LatestDuckVmRelease() (*models.Release, error) {
+	url := receiver.Host + receiver.BasePath + "/latest-vm.json"
+
+	resp, err := receiver.Client.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
 
 	var release models.Release
 	err = json.NewDecoder(resp.Body).Decode(&release)
