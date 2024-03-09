@@ -35,6 +35,8 @@ def get_all_releases_from(repo_name: str) -> PaginatedList[GitRelease]:
 
 
 def get_asset_type_from_name(asset_name: str) -> AssetInformation | None:
+    if not asset_name.endswith(".zip") or "duckdb_cli" not in asset_name:
+        return None
     architecture: ArchitectureType
     if "amd64" in asset_name:
         architecture = ArchitectureType.ArchitectureX86

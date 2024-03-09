@@ -29,8 +29,11 @@ var installCmd = &cobra.Command{
 			utils.ExitWithError(err)
 		}
 
-		downloadUrl := utils.GetDownloadUrlFrom(resolvedVersion)
-		err = utils.DownloadUrlTo(downloadUrl, config.InstallDir+"/"+resolvedVersion.Version)
+		downloadUrl, err := utils.GetDownloadUrlFrom(resolvedVersion)
+		if err != nil {
+			utils.ExitWithError(err)
+		}
+		err = utils.DownloadUrlTo(downloadUrl, config.VersionDir+"/"+resolvedVersion.Version)
 		if err != nil {
 			utils.ExitWithError(err)
 		}
