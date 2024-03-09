@@ -1,0 +1,35 @@
+name: Update Versions
+
+on:
+  workflow_dispatch: # Allows you to manually trigger the workflow.
+  schedule:
+    - cron: '0 0 * * *' # Runs at 00:00 UTC every day.
+
+jobs:
+  update-versions:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0 # Ensures the entire git history is checked out
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11' # Specify the Python version you need
+
+    - name: Install dependencies
+      run: |
+        pip install poetry
+        poetry install
+
+    - name: Run extract_releases script
+      run: poetry run python scripts/extract_releases.py
+
+    - name: Commit and Push changes
+      run: |
+        git config --global user.email "niclas.haderer.dev@gmail.com"
+        git config --global user.name "Niclas Haderer"
+        git add versions/*
+        git commit -m "Updated version" -a || echo "No changes to commit"
+        git push
