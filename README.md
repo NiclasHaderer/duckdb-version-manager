@@ -14,7 +14,7 @@ Then add *$HOME/.local/bin* to your PATH.
 
 ### Usage
 
-```bash
+```
 duck-vm --help
 
 A version manager for DuckDB
