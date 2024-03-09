@@ -34,3 +34,16 @@ func GetInstalledVersionPath(version string) (*string, error) {
 	}
 	return nil, fmt.Errorf("version %s not found", version)
 }
+
+func GetInstalledVersionPathOrInstall(version string) (*string, error) {
+	path, err := GetInstalledVersionPath(version)
+	if path != nil {
+		return path, nil
+	}
+	fmt.Printf("Version %s not found, installing...\n", version)
+	err = InstallVersion(version)
+	if err != nil {
+		return nil, err
+	}
+	return GetInstalledVersionPath(version)
+}

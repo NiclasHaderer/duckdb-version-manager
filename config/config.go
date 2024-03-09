@@ -10,6 +10,7 @@ var ConfigPath string
 var VersionDir string
 
 var InstallDir string
+var DuckDBName = "duckdb"
 
 func init() {
 	homeDir, err := os.UserHomeDir()

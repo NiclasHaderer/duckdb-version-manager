@@ -1,8 +1,7 @@
 package cmd
 
 import (
-	"fmt"
-
+	"duckdb-version-manager/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -12,7 +11,16 @@ var defaultCmd = &cobra.Command{
 	Short: "Set an already installed version of DuckDB as the default one",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("default called")
+		path, err := utils.GetInstalledVersionPathOrInstall(args[0])
+		if err != nil {
+			utils.ExitWithError(err)
+		}
+
+		// Create a symlink to .local/bin/duckdb
+		err = utils.SetDefaultVersion(*path)
+		if err != nil {
+			utils.ExitWithError(err)
+		}
 	},
 }
 

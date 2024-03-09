@@ -1,4 +1,4 @@
-package utils
+package client
 
 import (
 	"duckdb-version-manager/models"
@@ -6,7 +6,7 @@ import (
 	"sort"
 )
 
-func ToVersionList(dict models.VersionDict) models.VersionList {
+func toVersionList(dict models.VersionDict) models.VersionList {
 	versionList := make(models.VersionList, 0, len(dict))
 
 	for versionStr, location := range dict {

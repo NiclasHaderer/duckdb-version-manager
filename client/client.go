@@ -2,7 +2,6 @@ package client
 
 import (
 	"duckdb-version-manager/models"
-	"duckdb-version-manager/utils"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -63,7 +62,7 @@ func (receiver ApiClient) ListAllReleases() (models.VersionList, error) {
 		return nil, err
 	}
 
-	return utils.ToVersionList(result), nil
+	return toVersionList(result), nil
 }
 
 func (receiver ApiClient) GetRelease(version string) (*models.Release, error) {
