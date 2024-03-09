@@ -8,9 +8,10 @@ import (
 )
 
 var runCmd = &cobra.Command{
-	Use:   "run [version] [duckdb args]",
-	Short: "Execute a specific version of DuckDB",
-	Args:  cobra.MinimumNArgs(1),
+	Use:                "run [version] [duckdb args]",
+	Short:              "Execute a specific version of DuckDB",
+	Args:               cobra.MinimumNArgs(1),
+	DisableFlagParsing: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		path, err := utils.GetInstalledVersionPathOrInstall(args[0])
 		if err != nil {
