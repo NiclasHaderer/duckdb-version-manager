@@ -6,8 +6,8 @@ import (
 )
 
 var updateSelfCmd = &cobra.Command{
-	Use:   "updateSelf",
-	Short: "Updates the duck-vm binary to the latest version",
+	Use:   "update-self",
+	Short: "Updates duck-vm to the latest version",
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Fatalf("This feature is not implemented yet")
 	},
