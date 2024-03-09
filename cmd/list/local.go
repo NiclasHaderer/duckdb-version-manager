@@ -1,12 +1,10 @@
 package list
 
 import (
-	"duckdb-version-manager/config"
 	"duckdb-version-manager/models"
 	"duckdb-version-manager/utils"
 	"fmt"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 func printVersions(versions []models.Tuple[string, string]) {
@@ -25,19 +23,10 @@ var LocalCmd = &cobra.Command{
 	Use:   "local",
 	Short: "List locally installed DuckDB versions",
 	Run: func(cmd *cobra.Command, args []string) {
-		// List the locally installed DuckDB versions
-		entries, err := os.ReadDir(config.VersionDir)
+		entries, err := utils.GetInstalledVersions()
 		if err != nil {
 			utils.ExitWithError(err)
 		}
-
-		versions := make([]models.Tuple[string, string], 0)
-		for _, e := range entries {
-			if !e.IsDir() {
-				versions = append(versions, models.Tuple[string, string]{First: e.Name(), Second: config.VersionDir + "/" + e.Name()})
-			}
-		}
-
-		printVersions(versions)
+		printVersions(entries)
 	},
 }
