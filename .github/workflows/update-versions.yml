@@ -1,7 +1,7 @@
 name: Update Versions
 
 on:
-  workflow_dispatch: # Allows you to manually trigger the workflow.
+  workflow_dispatch:
   schedule:
     - cron: '0 0 * * *' # Runs at 00:00 UTC every day.
 
@@ -9,14 +9,12 @@ jobs:
   update-versions:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0 # Ensures the entire git history is checked out
+    - uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11' # Specify the Python version you need
+        python-version: '3.11'
 
     - name: Install dependencies
       run: |
