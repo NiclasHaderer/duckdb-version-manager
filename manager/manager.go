@@ -20,6 +20,7 @@ type VersionManager interface {
 	SetDefaultVersion(version *string) error
 	Run(version string, args []string) error
 	VersionIsInstalled(version string) bool
+	GetLocalReleaseInfo(version string) (*models.LocalInstallationInfo, error)
 	saveLocalConfig() error
 }
 
@@ -64,23 +65,25 @@ func (v VersionManagerImpl) InstallVersion(version string) error {
 	return v.saveConfig()
 }
 
-func (v VersionManagerImpl) UninstallVersion(version string) error {
-	if _, ok := v.localConfig.LocalInstallations[version]; !ok {
+func (v VersionManagerImpl) UninstallVersion(unreliableVersion string) error {
+	if !v.VersionIsInstalled(unreliableVersion) {
 		return errors.New("version not installed")
 	}
 
+	release, _ := v.GetLocalReleaseInfo(unreliableVersion)
+
 	// Check if the version is the default version
-	if *v.localConfig.DefaultVersion == version {
+	if v.localConfig.DefaultVersion == &release.Version {
 		err := v.SetDefaultVersion(nil)
 		if err != nil {
 			return err
 		}
 	}
 
-	if err := os.Remove(v.localConfig.LocalInstallations[version].Location); err != nil {
+	if err := os.Remove(v.localConfig.LocalInstallations[release.Version].Location); err != nil {
 		return err
 	}
-	delete(v.localConfig.LocalInstallations, version)
+	delete(v.localConfig.LocalInstallations, release.Version)
 	return v.saveConfig()
 }
 
@@ -97,7 +100,7 @@ func (v VersionManagerImpl) GetDefaultVersion() *models.LocalInstallationInfo {
 }
 
 func (v VersionManagerImpl) SetDefaultVersion(version *string) error {
-	if _, err := os.Lstat(config.DefaultVersionFile); err != nil {
+	if _, err := os.Lstat(config.DefaultVersionFile); err == nil {
 		err := os.Remove(config.DefaultVersionFile)
 		if err != nil {
 			return err
@@ -108,14 +111,14 @@ func (v VersionManagerImpl) SetDefaultVersion(version *string) error {
 		return v.saveConfig()
 	}
 
-	versionToInstall, ok := v.localConfig.LocalInstallations[*version]
-	if !ok {
+	if !v.VersionIsInstalled(*version) {
 		err := v.InstallVersion(*version)
 		if err != nil {
 			return err
 		}
 	}
 
+	versionToInstall, _ := v.GetLocalReleaseInfo(*version)
 	return os.Symlink(versionToInstall.Location, config.DefaultVersionFile)
 }
 
@@ -136,8 +139,8 @@ func (v VersionManagerImpl) Run(version string, args []string) error {
 		}
 	}
 
-	versionPath := v.localConfig.LocalInstallations[version].Location
-	args = utils.Prepend(args, versionPath)
+	release, _ := v.GetLocalReleaseInfo(version)
+	args = utils.Prepend(args, release.Location)
 	err := syscall.Exec(args[0], args, os.Environ())
 	if err != nil {
 		return err
@@ -147,5 +150,22 @@ func (v VersionManagerImpl) Run(version string, args []string) error {
 
 func (v VersionManagerImpl) VersionIsInstalled(version string) bool {
 	_, ok := v.localConfig.LocalInstallations[version]
+
+	if !ok {
+		_, ok = v.localConfig.LocalInstallations["v"+version]
+		return ok
+	}
+
 	return ok
+}
+
+func (v VersionManagerImpl) GetLocalReleaseInfo(version string) (*models.LocalInstallationInfo, error) {
+	li, ok := v.localConfig.LocalInstallations[version]
+	if !ok {
+		li, ok = v.localConfig.LocalInstallations["v"+version]
+		if !ok {
+			return nil, errors.New("version not found")
+		}
+	}
+	return &li, nil
 }
