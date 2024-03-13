@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"duckdb-version-manager/manager"
 	"duckdb-version-manager/utils"
 	"github.com/spf13/cobra"
 )
@@ -10,7 +11,7 @@ var installCmd = &cobra.Command{
 	Short: "Install a specific version of DuckDB",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		err := utils.InstallVersion(args[0])
+		err := manager.Run.InstallVersion(args[0])
 		if err != nil {
 			utils.ExitWithError(err)
 		}

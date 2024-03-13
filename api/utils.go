@@ -1,4 +1,4 @@
-package client
+package api
 
 import (
 	"duckdb-version-manager/models"

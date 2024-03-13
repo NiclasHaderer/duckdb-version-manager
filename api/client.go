@@ -1,4 +1,4 @@
-package client
+package api
 
 import (
 	"duckdb-version-manager/models"
@@ -14,6 +14,7 @@ type Client interface {
 	ListAllReleases() (models.VersionList, error)
 	ListAllReleasesDict() (models.VersionDict, error)
 	LatestDuckVmRelease() (*models.Release, error)
+	Get() *http.Client
 }
 
 type ApiClient struct {
@@ -74,7 +75,10 @@ func (receiver ApiClient) GetRelease(version string) (*models.Release, error) {
 
 	versionPath, ok := versions[version]
 	if !ok {
-		return nil, errors.New("version not found")
+		versionPath, ok = versions["v"+version]
+		if !ok {
+			return nil, errors.New("version not found")
+		}
 	}
 
 	return receiver.GetReleaseWithLocation(versionPath)
@@ -114,4 +118,8 @@ func (receiver ApiClient) LatestDuckVmRelease() (*models.Release, error) {
 	}
 
 	return &release, nil
+}
+
+func (receiver ApiClient) Get() *http.Client {
+	return receiver.Client
 }

@@ -1,10 +1,9 @@
 package cmd
 
 import (
+	"duckdb-version-manager/manager"
 	"duckdb-version-manager/utils"
 	"github.com/spf13/cobra"
-	"os"
-	"syscall"
 )
 
 var runCmd = &cobra.Command{
@@ -14,12 +13,7 @@ var runCmd = &cobra.Command{
 	DisableFlagParsing:    true,
 	DisableFlagsInUseLine: true,
 	Run: func(cmd *cobra.Command, args []string) {
-		path, err := utils.GetInstalledVersionPathOrInstall(args[0])
-		if err != nil {
-			utils.ExitWithError(err)
-		}
-		args[0] = *path
-		err = syscall.Exec(args[0], args, os.Environ())
+		err := manager.Run.Run(args[0], args[1:])
 		if err != nil {
 			utils.ExitWithError(err)
 		}

@@ -1,7 +1,7 @@
 package list
 
 import (
-	"duckdb-version-manager/client"
+	"duckdb-version-manager/api"
 	"fmt"
 	"github.com/spf13/cobra"
 	"log"
@@ -11,7 +11,7 @@ var RemoteCmd = &cobra.Command{
 	Use:   "remote",
 	Short: "List remote DuckDB versions",
 	Run: func(cmd *cobra.Command, args []string) {
-		releases, err := client.New().ListAllReleases()
+		releases, err := api.New().ListAllReleases()
 		if err != nil {
 			log.Fatal(err)
 		}

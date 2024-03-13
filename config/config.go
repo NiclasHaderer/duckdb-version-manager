@@ -5,12 +5,11 @@ import (
 	"os"
 )
 
-var ConfigPath string
-
+var path string
+var File string
 var VersionDir string
-
 var InstallDir string
-var DuckDBName = "duckdb"
+var DefaultVersionFile string
 var DuckVMName = "duck-vm"
 
 func init() {
@@ -18,9 +17,11 @@ func init() {
 	if err != nil {
 		log.Fatalf("Error getting homeDir's home directory: %s", err)
 	}
-	ConfigPath = homeDir + "/.config/duck-vm"
-	VersionDir = ConfigPath + "/versions"
+	path = homeDir + "/.config/duck-vm"
+	File = path + "/config.json"
+	VersionDir = path + "/versions"
 	InstallDir = homeDir + "/.local/bin"
+	DefaultVersionFile = InstallDir + "/default"
 
 	// Ensure the directories exist
 	err = os.MkdirAll(VersionDir, 0700)
