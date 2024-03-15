@@ -3,11 +3,15 @@ import subprocess
 from pathlib import Path
 
 main_file = str(Path(__file__).parent.parent / "main.go")
-print(main_file)
 
 
 def run_process(*args: str) -> str:
-    result = subprocess.run(["go", "run", main_file, *args], capture_output=True, text=True)
+    args = ["go", "run", "-ldflags", "-X 'duckdb-version-manager/cmd.version=dev'", main_file, *args]
+    result = subprocess.run(
+        args,
+        capture_output=True,
+        text=True,
+    )
 
     text = result.stdout + result.stderr
     if result.returncode != 0:

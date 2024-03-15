@@ -62,3 +62,7 @@ class TestE2E(unittest.TestCase):
             self.fail("Should not be able to run invalid version")
         except ValueError as e:
             self.assertIn("exit status 1", str(e))
+
+
+if __name__ == '__main__':
+    unittest.main()

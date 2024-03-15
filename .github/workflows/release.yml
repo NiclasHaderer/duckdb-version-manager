@@ -36,12 +36,11 @@ jobs:
           git push origin --tags
 
       - name: Create GitHub Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: svenstaro/upload-release-action@v2
         with:
-          tag_name: ${{ steps.validate.outputs.version }}
+          tag: ${{ steps.validate.outputs.version }}
           release_name: Release ${{ steps.validate.outputs.version }}
-          draft: false
-          prerelease: false
-          files: bin/*
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: bin/*
+          overwrite: true
+          file_glob: true
