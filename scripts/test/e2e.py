@@ -14,7 +14,7 @@ class TestE2E(unittest.TestCase):
     def test_install_and_removal_version(self):
         remote_versions = duck_vm.list_remote_versions()
 
-        # Install the latest version
+        # Install the latest version (at position 0 is nightly)
         latest_version = remote_versions[1]
         duck_vm.install_version(latest_version)
 

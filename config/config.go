@@ -21,7 +21,7 @@ func init() {
 	File = path + "/config.json"
 	VersionDir = path + "/versions"
 	InstallDir = homeDir + "/.local/bin"
-	DefaultVersionFile = InstallDir + "/default"
+	DefaultVersionFile = InstallDir + "/duckdb"
 
 	// Ensure the directories exist
 	err = os.MkdirAll(VersionDir, 0700)

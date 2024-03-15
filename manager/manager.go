@@ -51,7 +51,7 @@ func (v VersionManagerImpl) InstallVersion(version string) error {
 		return err
 	}
 
-	fileLocation := config.InstallDir + "/" + release.Version
+	fileLocation := config.VersionDir + "/" + release.Version
 	if err := os.WriteFile(fileLocation, duckDb, 0700); err != nil {
 		return err
 	}
@@ -119,7 +119,13 @@ func (v VersionManagerImpl) SetDefaultVersion(version *string) error {
 	}
 
 	versionToInstall, _ := v.GetLocalReleaseInfo(*version)
-	return os.Symlink(versionToInstall.Location, config.DefaultVersionFile)
+	err := os.Symlink(versionToInstall.Location, config.DefaultVersionFile)
+	if err != nil {
+		return err
+	}
+
+	v.localConfig.DefaultVersion = &versionToInstall.Version
+	return v.saveConfig()
 }
 
 func (v VersionManagerImpl) saveConfig() error {
