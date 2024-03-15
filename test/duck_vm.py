@@ -1,18 +1,18 @@
 import re
+import subprocess
 from pathlib import Path
 
-from pwnlib.tubes import process
-
-main_file = str(Path(__file__).parent.parent.parent / "main.go")
+main_file = str(Path(__file__).parent.parent / "main.go")
 print(main_file)
 
 
 def run_process(*args: str) -> str:
-    p = process.process(["go", "run", main_file, *args])
-    stdout = p.recvall().decode("utf-8")
-    if "Duck-VM encounted a fatal error" in stdout:
-        raise ValueError(stdout)
-    return stdout
+    result = subprocess.run(["go", "run", main_file, *args], capture_output=True, text=True)
+
+    text = result.stdout + result.stderr
+    if result.returncode != 0:
+        raise ValueError(text)
+    return text
 
 
 def install_version(version: str) -> str:
@@ -44,5 +44,5 @@ def uninstall_version(version: str) -> str:
 
 
 def run_default(*args: str) -> str:
-    p = process.process(["duckdb", *args])
-    return p.recvall().decode("utf-8")
+    result = subprocess.run(["duckdb", *args], capture_output=True, text=True)
+    return result.stdout

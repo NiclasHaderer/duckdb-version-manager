@@ -42,6 +42,23 @@ class TestE2E(unittest.TestCase):
         duck_vm.uninstall_version("0.9.2")
 
     def test_set_default_version(self):
-        out = duck_vm.set_version_as_default("v0.9.0")
+        duck_vm.set_version_as_default("v0.9.0")
         out = duck_vm.run_default("--version")
         self.assertIn("v0.9.0", out)
+        duck_vm.uninstall_version("v0.9.0")
+        try:
+            duck_vm.run_default("--version")
+            self.fail("Should not be able to run default version")
+        except FileNotFoundError as e:
+            self.assertIn("No such file or directory: 'duckdb'", str(e))
+
+    def test_run_nightly(self):
+        duck_vm.run_version("nightly", "--version")
+        duck_vm.uninstall_version("nightly")
+
+    def test_run_invalid_version(self):
+        try:
+            duck_vm.run_version("not-a-valid-version", "--version")
+            self.fail("Should not be able to run invalid version")
+        except ValueError as e:
+            self.assertIn("exit status 1", str(e))

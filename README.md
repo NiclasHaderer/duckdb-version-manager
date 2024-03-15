@@ -15,12 +15,12 @@ Then add *$HOME/.local/bin* to your PATH.
 ### Usage
 
 ```
-duck-vm --help
+duckman --help
 
 A version manager for DuckDB
 
 Usage:
-  duck-vm [command]
+  duckman [command]
 
 Available Commands:
   completion  Generate the autocompletion script for the specified shell
@@ -30,12 +30,12 @@ Available Commands:
   list        List available DuckDB versions. Use 'local' to list local versions and 'remote' to list remote versions.
   run         Execute a specific version of DuckDB
   uninstall   Uninstall a version of DuckDB
-  update-self  Updates duck-vm to the latest version
+  update-self  Updates duckman to the latest version
 
 Flags:
-  -h, --help   help for duck-vm
+  -h, --help   help for duckman
 
-Use "duck-vm [command] --help" for more information about a command.
+Use "duckman [command] --help" for more information about a command.
 ```
 
 ### Building from source

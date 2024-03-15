@@ -40,11 +40,11 @@ def get_all_releases_from(repo_name: str) -> PaginatedList[GitRelease]:
     return releases
 
 
-def get_asset_type_from_name(asset_name: str, mode: Literal["duck-vm", "duck-db"]) -> AssetInformation | None:
+def get_asset_type_from_name(asset_name: str, mode: Literal["duckman", "duck-db"]) -> AssetInformation | None:
     if mode == "duck-db" and (not asset_name.endswith(".zip") or "duckdb_cli" not in asset_name):
         return None
 
-    if mode == "duck-vm" and asset_name.endswith(".zip"):
+    if mode == "duckman" and asset_name.endswith(".zip"):
         return None
 
     architecture: ArchitectureType
@@ -128,7 +128,7 @@ def save_latest_duck_vm_release():
         "platforms": defaultdict(dict),
     }
     for asset in latest_release.get_assets():
-        asset_info = get_asset_type_from_name(asset.name, "duck-vm")
+        asset_info = get_asset_type_from_name(asset.name, "duckman")
         if asset_info is None:
             continue
         serializable_release["platforms"][asset_info["platform"]][asset_info["architecture"]] = {

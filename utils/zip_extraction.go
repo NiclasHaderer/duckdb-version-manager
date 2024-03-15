@@ -3,25 +3,29 @@ package utils
 import (
 	"archive/zip"
 	"bytes"
-	"errors"
+	"duckdb-version-manager/stacktrace"
 	"io"
 	"strings"
 )
 
-func getZipFileContent(file *zip.File) ([]byte, error) {
+func getZipFileContent(file *zip.File) ([]byte, stacktrace.Error) {
 	fileReader, err := file.Open()
 	if err != nil {
-		return nil, err
+		return nil, stacktrace.Wrap(err)
 	}
 	defer fileReader.Close()
 
-	return io.ReadAll(fileReader)
+	content, err := io.ReadAll(fileReader)
+	if err != nil {
+		return nil, stacktrace.Wrap(err)
+	}
+	return content, nil
 }
 
-func ExtractDuckdbFile(assetBytes []byte) ([]byte, error) {
+func ExtractDuckdbFile(assetBytes []byte) ([]byte, stacktrace.Error) {
 	zipReader, err := zip.NewReader(bytes.NewReader(assetBytes), int64(len(assetBytes)))
 	if err != nil {
-		return nil, err
+		return nil, stacktrace.Wrap(err)
 	}
 	for _, file := range zipReader.File {
 		fileName := file.Name
@@ -44,5 +48,5 @@ func ExtractDuckdbFile(assetBytes []byte) ([]byte, error) {
 		}
 	}
 
-	return nil, errors.New("no duckdb binary found in zip")
+	return nil, stacktrace.New("Error during zip extraction: no file with the name 'duckdb' found in the zip file.")
 }

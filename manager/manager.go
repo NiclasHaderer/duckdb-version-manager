@@ -4,24 +4,24 @@ import (
 	"duckdb-version-manager/api"
 	"duckdb-version-manager/config"
 	"duckdb-version-manager/models"
+	"duckdb-version-manager/stacktrace"
 	"duckdb-version-manager/utils"
 	"encoding/json"
-	"errors"
 	"os"
 	"syscall"
 	"time"
 )
 
 type VersionManager interface {
-	InstallVersion(version string) error
-	UninstallVersion(version string) error
+	InstallVersion(version string) stacktrace.Error
+	UninstallVersion(version string) stacktrace.Error
 	ListInstalledVersions() []models.LocalInstallationInfo
 	GetDefaultVersion() *models.LocalInstallationInfo
-	SetDefaultVersion(version *string) error
-	Run(version string, args []string) error
+	SetDefaultVersion(version *string) stacktrace.Error
+	Run(version string, args []string) stacktrace.Error
 	VersionIsInstalled(version string) bool
-	GetLocalReleaseInfo(version string) (*models.LocalInstallationInfo, error)
-	saveLocalConfig() error
+	GetLocalReleaseInfo(version string) (*models.LocalInstallationInfo, stacktrace.Error)
+	saveLocalConfig() stacktrace.Error
 }
 
 type VersionManagerImpl struct {
@@ -29,12 +29,12 @@ type VersionManagerImpl struct {
 	localConfig models.LocalConfig
 }
 
-func (v VersionManagerImpl) saveLocalConfig() error {
+func (v VersionManagerImpl) saveLocalConfig() stacktrace.Error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (v VersionManagerImpl) InstallVersion(version string) error {
+func (v VersionManagerImpl) InstallVersion(version string) stacktrace.Error {
 	release, err := v.client.GetRelease(version)
 	if err != nil {
 		return err
@@ -45,7 +45,7 @@ func (v VersionManagerImpl) InstallVersion(version string) error {
 		return err
 	}
 
-	githubAsset, err := utils.GetResponseBodyFrom(v.client.Get(), downloadUrl)
+	githubAsset, err := utils.GetResponseBodyFrom(v.client.Get(), *downloadUrl)
 	duckDb, err := utils.ExtractDuckdbFile(githubAsset)
 	if err != nil {
 		return err
@@ -53,21 +53,22 @@ func (v VersionManagerImpl) InstallVersion(version string) error {
 
 	fileLocation := config.VersionDir + "/" + release.Version
 	if err := os.WriteFile(fileLocation, duckDb, 0700); err != nil {
-		return err
+		return stacktrace.Wrap(err)
 	}
 
+	installTime, _ := time.Now().MarshalText()
 	v.localConfig.LocalInstallations[release.Version] = models.LocalInstallationInfo{
 		Version:          release.Version,
 		Location:         fileLocation,
-		InstallationDate: time.Now().String(),
+		InstallationDate: string(installTime),
 	}
 
 	return v.saveConfig()
 }
 
-func (v VersionManagerImpl) UninstallVersion(unreliableVersion string) error {
+func (v VersionManagerImpl) UninstallVersion(unreliableVersion string) stacktrace.Error {
 	if !v.VersionIsInstalled(unreliableVersion) {
-		return errors.New("version not installed")
+		return stacktrace.NewF("Version '%s' not installed", unreliableVersion)
 	}
 
 	release, _ := v.GetLocalReleaseInfo(unreliableVersion)
@@ -81,7 +82,7 @@ func (v VersionManagerImpl) UninstallVersion(unreliableVersion string) error {
 	}
 
 	if err := os.Remove(v.localConfig.LocalInstallations[release.Version].Location); err != nil {
-		return err
+		return stacktrace.Wrap(err)
 	}
 	delete(v.localConfig.LocalInstallations, release.Version)
 	return v.saveConfig()
@@ -99,11 +100,11 @@ func (v VersionManagerImpl) GetDefaultVersion() *models.LocalInstallationInfo {
 	return &tmp
 }
 
-func (v VersionManagerImpl) SetDefaultVersion(version *string) error {
-	if _, err := os.Lstat(config.DefaultVersionFile); err == nil {
-		err := os.Remove(config.DefaultVersionFile)
+func (v VersionManagerImpl) SetDefaultVersion(version *string) stacktrace.Error {
+	if _, err := os.Lstat(config.DefaultDuckdbFile); err == nil {
+		err := os.Remove(config.DefaultDuckdbFile)
 		if err != nil {
-			return err
+			return stacktrace.Wrap(err)
 		}
 	}
 	if version == nil {
@@ -119,25 +120,29 @@ func (v VersionManagerImpl) SetDefaultVersion(version *string) error {
 	}
 
 	versionToInstall, _ := v.GetLocalReleaseInfo(*version)
-	err := os.Symlink(versionToInstall.Location, config.DefaultVersionFile)
+	err := os.Symlink(versionToInstall.Location, config.DefaultDuckdbFile)
 	if err != nil {
-		return err
+		return stacktrace.Wrap(err)
 	}
 
 	v.localConfig.DefaultVersion = &versionToInstall.Version
 	return v.saveConfig()
 }
 
-func (v VersionManagerImpl) saveConfig() error {
-	configAsBytes, err := json.Marshal(v.localConfig)
+func (v VersionManagerImpl) saveConfig() stacktrace.Error {
+	configAsBytes, err := json.MarshalIndent(v.localConfig, "", "  ")
 	if err != nil {
-		return err
+		return stacktrace.Wrap(err)
 	}
 
-	return os.WriteFile(config.File, configAsBytes, 0700)
+	err = os.WriteFile(config.File, configAsBytes, 0700)
+	if err != nil {
+		return stacktrace.Wrap(err)
+	}
+	return nil
 }
 
-func (v VersionManagerImpl) Run(version string, args []string) error {
+func (v VersionManagerImpl) Run(version string, args []string) stacktrace.Error {
 	if !v.VersionIsInstalled(version) {
 		err := v.InstallVersion(version)
 		if err != nil {
@@ -146,10 +151,19 @@ func (v VersionManagerImpl) Run(version string, args []string) error {
 	}
 
 	release, _ := v.GetLocalReleaseInfo(version)
+	installationTime, _ := time.Parse(time.RFC3339, release.InstallationDate)
+	isOlderThanOneDay := time.Now().Sub(installationTime) > 24*time.Hour
+	if release.Version == "nightly" && isOlderThanOneDay {
+		err := v.InstallVersion(version)
+		if err != nil {
+			return err
+		}
+	}
+
 	args = utils.Prepend(args, release.Location)
 	err := syscall.Exec(args[0], args, os.Environ())
 	if err != nil {
-		return err
+		return stacktrace.Wrap(err)
 	}
 	return nil
 }
@@ -165,12 +179,12 @@ func (v VersionManagerImpl) VersionIsInstalled(version string) bool {
 	return ok
 }
 
-func (v VersionManagerImpl) GetLocalReleaseInfo(version string) (*models.LocalInstallationInfo, error) {
+func (v VersionManagerImpl) GetLocalReleaseInfo(version string) (*models.LocalInstallationInfo, stacktrace.Error) {
 	li, ok := v.localConfig.LocalInstallations[version]
 	if !ok {
 		li, ok = v.localConfig.LocalInstallations["v"+version]
 		if !ok {
-			return nil, errors.New("version not found")
+			return nil, stacktrace.NewF("Version '%s' not found in local versions", version)
 		}
 	}
 	return &li, nil

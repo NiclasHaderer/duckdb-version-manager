@@ -1,15 +1,18 @@
 package cmd
 
 import (
+	"duckdb-version-manager/stacktrace"
+	"duckdb-version-manager/utils"
 	"os"
 
 	"github.com/spf13/cobra"
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "duck-vm",
+	Use:   "duckman",
 	Short: "A version manager for DuckDB",
 }
+var version string
 
 func Execute() {
 	err := rootCmd.Execute()
@@ -19,13 +22,8 @@ func Execute() {
 }
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.duckdb-version-manager.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	// rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	if version == "" {
+		utils.ExitWithError(stacktrace.New("Version not set using compile flags. Use -ldflags \"-X 'duckdb-version-manager/cmd.version=1.0.0'\" to set the version."))
+	}
+	rootCmd.Version = version
 }

@@ -1,7 +1,18 @@
 #!/bin/bash
 
+
+# Get version from git
+VERSION=$1
+
+# Check if version is set
+if [ -z "$VERSION" ]; then
+    echo "Version not set"
+    exit 1
+fi
+
+
 # Variables
-BINARY_NAME="duck-vm"
+BINARY_NAME="duckman"
 OUTPUT_DIR="bin"
 GOOS_ARRAY=("darwin" "darwin" "linux" "linux" "windows" "windows")
 GOARCH_ARRAY=("amd64" "arm64" "amd64" "arm" "amd64" "arm")
@@ -19,7 +30,7 @@ for i in ${!GOOS_ARRAY[@]}; do
     OUTPUT_NAME="$OUTPUT_DIR/$BINARY_NAME-$GOOS-$GOARCH"
 
     # Cross-compile
-    env GOOS="$GOOS" GOARCH="$GOARCH" go build -o "$OUTPUT_NAME"
+    env GOOS="$GOOS" GOARCH="$GOARCH" go build -ldflags "-X 'duckdb-version-manager/cmd.version=$VERSION'" -o "$OUTPUT_NAME"
 
     # Check if cross-compilation was successful
     if [ $? -eq 0 ]; then

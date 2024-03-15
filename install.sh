@@ -35,10 +35,10 @@ if [ "${DOWNLOAD_URL}" == "null" ] || [ -z "${DOWNLOAD_URL}" ]; then
 fi
 
 echo "Downloading from ${DOWNLOAD_URL}..."
-curl -sL "${DOWNLOAD_URL}" -o "${DOWNLOAD_DIR}/duck-vm"
-echo "Download complete. duck-vm is now available in ${DOWNLOAD_DIR}/duck-vm"
+curl -sL "${DOWNLOAD_URL}" -o "${DOWNLOAD_DIR}/duckman"
+echo "Download complete. duckman is now available in ${DOWNLOAD_DIR}/duckman"
 
-chmod +x "${DOWNLOAD_DIR}/duck-vm"
+chmod +x "${DOWNLOAD_DIR}/duckman"
 
 if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
     echo ""

@@ -13,7 +13,6 @@ python = "^3.11"
 pygithub = "^2.2.0"
 black = "^24.2.0"
 httpx = "^0.27.0"
-pwntools = "^4.12.0"
 coverage = "^7.4.3"
 
 
