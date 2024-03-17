@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Validate version
         id: validate
@@ -23,6 +23,19 @@ jobs:
             exit 1
           fi
           echo "::set-output name=version::$VERSION"
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install poetry
+          poetry install
+
+      - name: Run test
+        run: poetry run python tests/e2e.py
 
       - name: Run compile script
         run: |
