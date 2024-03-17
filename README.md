@@ -8,7 +8,7 @@ For **MacOS** and **Linux**, run the following command in your terminal:
 curl https://raw.githubusercontent.com/NiclasHaderer/duckdb-version-manager/main/install.sh -s | /bin/bash
 ```
 
-> [!CAUTION]
+> [!WARNING]
 > Windows has not been tested yet, so use at your own risk.  
 > Download the latest binary from the [release page](https://github.com/NiclasHaderer/duckdb-version-manager/releases) and save it as *duckman.exe* in *$HOME/.local/bin*.
 Then add *$HOME/.local/bin* to your PATH.
