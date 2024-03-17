@@ -1,5 +1,6 @@
 import re
 import subprocess
+import sys
 from pathlib import Path
 
 main_file = str(Path(__file__).parent.parent / "main.go")
@@ -48,5 +49,8 @@ def uninstall_version(version: str) -> str:
 
 
 def run_default(*args: str) -> str:
-    result = subprocess.run(["duckdb", *args], capture_output=True, text=True)
+    binary = "duckdb"
+    if sys.platform == "win32":
+        binary += ".exe"
+    result = subprocess.run([binary, *args], capture_output=True, text=True)
     return result.stdout

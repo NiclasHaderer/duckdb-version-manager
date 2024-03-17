@@ -1,6 +1,7 @@
 package config
 
 import (
+	"duckdb-version-manager/utils"
 	"log"
 	"os"
 )
@@ -13,6 +14,7 @@ var DuckmanBinaryFile string
 
 func init() {
 	homeDir, err := os.UserHomeDir()
+	deviceInfo := utils.GetDeviceInfo()
 	if err != nil {
 		log.Fatalf("Error getting homeDir's home directory: %s", err)
 	}
@@ -20,8 +22,12 @@ func init() {
 	File = Dir + "/config.json"
 	VersionDir = Dir + "/versions"
 	binaryDir := homeDir + "/.local/bin"
-	DefaultDuckdbFile = binaryDir + "/duckdb"
-	DuckmanBinaryFile = binaryDir + "/duckman"
+	if deviceInfo.Platform == "windows" {
+		DefaultDuckdbFile = binaryDir + "/duckdb" + ".exe"
+	} else {
+		DefaultDuckdbFile = binaryDir + "/duckdb"
+	}
+	DuckmanBinaryFile = binaryDir + "/duckman.exe"
 
 	// Ensure the directories exist
 	err = os.MkdirAll(VersionDir, 0700)

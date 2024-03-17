@@ -31,7 +31,7 @@ func ExtractDuckdbFile(assetBytes []byte) ([]byte, stacktrace.Error) {
 		fileName := file.Name
 
 		// Normal release -> just one file with the name "duckdb"
-		if fileName == "duckdb" {
+		if fileName == "duckdb" || fileName == "duckdb.exe" {
 			fileContent, err := getZipFileContent(file)
 			if err != nil {
 				return nil, err
