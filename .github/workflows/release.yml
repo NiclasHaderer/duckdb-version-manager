@@ -17,6 +17,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Add .local/bin to PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Ensure path is correct
+        run: echo $PATH
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
