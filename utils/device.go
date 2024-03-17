@@ -36,7 +36,7 @@ func getArchitecture() models.ArchitectureType {
 	arch := runtime.GOARCH
 	if arch == "arm64" {
 		return models.ArchitectureArm64
-	} else if arch == "x86" {
+	} else if arch == "x86" || arch == "amd64" {
 		return models.ArchitectureX86
 	}
 	err := stacktrace.NewF("Unsupported architecture: %s", arch)
