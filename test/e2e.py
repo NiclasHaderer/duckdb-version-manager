@@ -64,5 +64,5 @@ class TestE2E(unittest.TestCase):
             self.assertIn("exit status 1", str(e))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -33,7 +33,7 @@ func create() (VersionManager, stacktrace.Error) {
 		return nil, stacktrace.Wrap(err)
 	}
 
-	return &VersionManagerImpl{
+	return &versionManagerImpl{
 		localConfig: localConfig,
 		client:      api.New(),
 	}, nil

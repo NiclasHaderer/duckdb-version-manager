@@ -18,6 +18,7 @@ func GetDeviceInfo() DeviceInfo {
 	}
 }
 
+//goland:noinspection GoBoolExpressions
 func getPlatform() models.PlatformType {
 	os := runtime.GOOS
 	if os == "linux" {
@@ -32,6 +33,7 @@ func getPlatform() models.PlatformType {
 	return ""
 }
 
+//goland:noinspection GoBoolExpressions
 func getArchitecture() models.ArchitectureType {
 	arch := runtime.GOARCH
 	if arch == "arm64" {

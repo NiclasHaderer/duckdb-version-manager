@@ -17,21 +17,21 @@ type Client interface {
 	Get() *http.Client
 }
 
-type ApiClient struct {
+type clientImpl struct {
 	Host     string
 	Client   *http.Client
 	BasePath string
 }
 
-func (receiver ApiClient) GetAllReleases() (models.Releases, stacktrace.Error) {
-	releasesDict, err := receiver.ListAllReleasesDict()
+func (c clientImpl) GetAllReleases() (models.Releases, stacktrace.Error) {
+	releaseDict, err := c.ListAllReleasesDict()
 	if err != nil {
 		return nil, stacktrace.Wrap(err)
 	}
 
 	finalReleases := make(models.Releases)
-	for version, versionPath := range releasesDict {
-		release, err := receiver.GetReleaseWithLocation(versionPath)
+	for version, versionPath := range releaseDict {
+		release, err := c.GetReleaseWithLocation(versionPath)
 		if err != nil {
 			return nil, stacktrace.Wrap(err)
 		}
@@ -41,9 +41,9 @@ func (receiver ApiClient) GetAllReleases() (models.Releases, stacktrace.Error) {
 	return finalReleases, nil
 }
 
-func (receiver ApiClient) ListAllReleasesDict() (models.VersionDict, stacktrace.Error) {
-	url := receiver.Host + receiver.BasePath + "/versions.json"
-	resp, err := receiver.Client.Get(url)
+func (c clientImpl) ListAllReleasesDict() (models.VersionDict, stacktrace.Error) {
+	url := c.Host + c.BasePath + "/versions.json"
+	resp, err := c.Client.Get(url)
 	if err != nil {
 		return nil, stacktrace.Wrap(err)
 	}
@@ -58,8 +58,8 @@ func (receiver ApiClient) ListAllReleasesDict() (models.VersionDict, stacktrace.
 	return releases, nil
 }
 
-func (receiver ApiClient) ListAllReleases() (models.VersionList, stacktrace.Error) {
-	result, err := receiver.ListAllReleasesDict()
+func (c clientImpl) ListAllReleases() (models.VersionList, stacktrace.Error) {
+	result, err := c.ListAllReleasesDict()
 	if err != nil {
 		return nil, err
 	}
@@ -67,8 +67,8 @@ func (receiver ApiClient) ListAllReleases() (models.VersionList, stacktrace.Erro
 	return toVersionList(result), nil
 }
 
-func (receiver ApiClient) GetRelease(version string) (*models.Release, stacktrace.Error) {
-	versions, err := receiver.ListAllReleasesDict()
+func (c clientImpl) GetRelease(version string) (*models.Release, stacktrace.Error) {
+	versions, err := c.ListAllReleasesDict()
 	if err != nil {
 		return nil, err
 	}
@@ -81,13 +81,13 @@ func (receiver ApiClient) GetRelease(version string) (*models.Release, stacktrac
 		}
 	}
 
-	return receiver.GetReleaseWithLocation(versionPath)
+	return c.GetReleaseWithLocation(versionPath)
 }
 
-func (receiver ApiClient) GetReleaseWithLocation(versionPath string) (*models.Release, stacktrace.Error) {
-	url := receiver.Host + receiver.BasePath + "/" + versionPath
+func (c clientImpl) GetReleaseWithLocation(versionPath string) (*models.Release, stacktrace.Error) {
+	url := c.Host + c.BasePath + "/" + versionPath
 
-	resp, err := receiver.Client.Get(url)
+	resp, err := c.Client.Get(url)
 	if err != nil {
 		return nil, stacktrace.Wrap(err)
 	}
@@ -102,10 +102,10 @@ func (receiver ApiClient) GetReleaseWithLocation(versionPath string) (*models.Re
 	return &release, nil
 }
 
-func (receiver ApiClient) LatestDuckVmRelease() (*models.Release, stacktrace.Error) {
-	url := receiver.Host + receiver.BasePath + "/latest-vm.json"
+func (c clientImpl) LatestDuckVmRelease() (*models.Release, stacktrace.Error) {
+	url := c.Host + c.BasePath + "/latest-vm.json"
 
-	resp, err := receiver.Client.Get(url)
+	resp, err := c.Client.Get(url)
 	if err != nil {
 		return nil, stacktrace.Wrap(err)
 	}
@@ -120,6 +120,6 @@ func (receiver ApiClient) LatestDuckVmRelease() (*models.Release, stacktrace.Err
 	return &release, nil
 }
 
-func (receiver ApiClient) Get() *http.Client {
-	return receiver.Client
+func (c clientImpl) Get() *http.Client {
+	return c.Client
 }

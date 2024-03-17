@@ -24,17 +24,17 @@ type VersionManager interface {
 	saveLocalConfig() stacktrace.Error
 }
 
-type VersionManagerImpl struct {
+type versionManagerImpl struct {
 	client      api.Client
 	localConfig models.LocalConfig
 }
 
-func (v VersionManagerImpl) saveLocalConfig() stacktrace.Error {
+func (v versionManagerImpl) saveLocalConfig() stacktrace.Error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (v VersionManagerImpl) InstallVersion(version string) stacktrace.Error {
+func (v versionManagerImpl) InstallVersion(version string) stacktrace.Error {
 	release, err := v.client.GetRelease(version)
 	if err != nil {
 		return err
@@ -66,7 +66,7 @@ func (v VersionManagerImpl) InstallVersion(version string) stacktrace.Error {
 	return v.saveConfig()
 }
 
-func (v VersionManagerImpl) UninstallVersion(unreliableVersion string) stacktrace.Error {
+func (v versionManagerImpl) UninstallVersion(unreliableVersion string) stacktrace.Error {
 	if !v.VersionIsInstalled(unreliableVersion) {
 		return stacktrace.NewF("Version '%s' not installed", unreliableVersion)
 	}
@@ -88,11 +88,11 @@ func (v VersionManagerImpl) UninstallVersion(unreliableVersion string) stacktrac
 	return v.saveConfig()
 }
 
-func (v VersionManagerImpl) ListInstalledVersions() []models.LocalInstallationInfo {
+func (v versionManagerImpl) ListInstalledVersions() []models.LocalInstallationInfo {
 	return utils.Values(v.localConfig.LocalInstallations)
 }
 
-func (v VersionManagerImpl) GetDefaultVersion() *models.LocalInstallationInfo {
+func (v versionManagerImpl) GetDefaultVersion() *models.LocalInstallationInfo {
 	if v.localConfig.DefaultVersion == nil {
 		return nil
 	}
@@ -100,7 +100,7 @@ func (v VersionManagerImpl) GetDefaultVersion() *models.LocalInstallationInfo {
 	return &tmp
 }
 
-func (v VersionManagerImpl) SetDefaultVersion(version *string) stacktrace.Error {
+func (v versionManagerImpl) SetDefaultVersion(version *string) stacktrace.Error {
 	if _, err := os.Lstat(config.DefaultDuckdbFile); err == nil {
 		err := os.Remove(config.DefaultDuckdbFile)
 		if err != nil {
@@ -129,7 +129,7 @@ func (v VersionManagerImpl) SetDefaultVersion(version *string) stacktrace.Error 
 	return v.saveConfig()
 }
 
-func (v VersionManagerImpl) saveConfig() stacktrace.Error {
+func (v versionManagerImpl) saveConfig() stacktrace.Error {
 	configAsBytes, err := json.MarshalIndent(v.localConfig, "", "  ")
 	if err != nil {
 		return stacktrace.Wrap(err)
@@ -142,7 +142,7 @@ func (v VersionManagerImpl) saveConfig() stacktrace.Error {
 	return nil
 }
 
-func (v VersionManagerImpl) Run(version string, args []string) stacktrace.Error {
+func (v versionManagerImpl) Run(version string, args []string) stacktrace.Error {
 	if !v.VersionIsInstalled(version) {
 		err := v.InstallVersion(version)
 		if err != nil {
@@ -168,7 +168,7 @@ func (v VersionManagerImpl) Run(version string, args []string) stacktrace.Error 
 	return nil
 }
 
-func (v VersionManagerImpl) VersionIsInstalled(version string) bool {
+func (v versionManagerImpl) VersionIsInstalled(version string) bool {
 	_, ok := v.localConfig.LocalInstallations[version]
 
 	if !ok {
@@ -179,7 +179,7 @@ func (v VersionManagerImpl) VersionIsInstalled(version string) bool {
 	return ok
 }
 
-func (v VersionManagerImpl) GetLocalReleaseInfo(version string) (*models.LocalInstallationInfo, stacktrace.Error) {
+func (v versionManagerImpl) GetLocalReleaseInfo(version string) (*models.LocalInstallationInfo, stacktrace.Error) {
 	li, ok := v.localConfig.LocalInstallations[version]
 	if !ok {
 		li, ok = v.localConfig.LocalInstallations["v"+version]
