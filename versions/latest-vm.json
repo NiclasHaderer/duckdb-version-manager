@@ -1,23 +1,23 @@
 {
-  "version": "v0.2.1",
-  "name": "Release v0.2.1",
+  "version": "v0.2.3",
+  "name": "Release v0.2.3",
   "platforms": {
     "PlatformMac": {
       "ArchitectureX86": {
-        "downloadUrl": "https://github.com/NiclasHaderer/duckdb-version-manager/releases/download/v0.2.1/duckman-darwin-amd64"
+        "downloadUrl": "https://github.com/NiclasHaderer/duckdb-version-manager/releases/download/v0.2.3/duckman-darwin-amd64"
       },
       "ArchitectureArm64": {
-        "downloadUrl": "https://github.com/NiclasHaderer/duckdb-version-manager/releases/download/v0.2.1/duckman-darwin-arm64"
+        "downloadUrl": "https://github.com/NiclasHaderer/duckdb-version-manager/releases/download/v0.2.3/duckman-darwin-arm64"
       }
     },
     "PlatformLinux": {
       "ArchitectureX86": {
-        "downloadUrl": "https://github.com/NiclasHaderer/duckdb-version-manager/releases/download/v0.2.1/duckman-linux-amd64"
+        "downloadUrl": "https://github.com/NiclasHaderer/duckdb-version-manager/releases/download/v0.2.3/duckman-linux-amd64"
       }
     },
     "PlatformWindows": {
       "ArchitectureX86": {
-        "downloadUrl": "https://github.com/NiclasHaderer/duckdb-version-manager/releases/download/v0.2.1/duckman-windows-amd64"
+        "downloadUrl": "https://github.com/NiclasHaderer/duckdb-version-manager/releases/download/v0.2.3/duckman-windows-amd64"
       }
     }
   }
