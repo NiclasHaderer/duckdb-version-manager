@@ -7,6 +7,7 @@ import (
 	"duckdb-version-manager/stacktrace"
 	"duckdb-version-manager/utils"
 	"encoding/json"
+	"github.com/spf13/cobra"
 	"os"
 	"syscall"
 	"time"
@@ -21,6 +22,8 @@ type VersionManager interface {
 	Run(version string, args []string) stacktrace.Error
 	VersionIsInstalled(version string) bool
 	GetLocalReleaseInfo(version string) (*models.LocalInstallationInfo, stacktrace.Error)
+	LocalVersionList(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective)
+	RemoteVersionList(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective)
 	saveLocalConfig() stacktrace.Error
 }
 
@@ -188,4 +191,37 @@ func (v versionManagerImpl) GetLocalReleaseInfo(version string) (*models.LocalIn
 		}
 	}
 	return &li, nil
+}
+
+func (v versionManagerImpl) LocalVersionList(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective) {
+	installedVersions := v.ListInstalledVersions()
+	versionList := utils.Map(installedVersions, func(li models.LocalInstallationInfo) string {
+		return li.Version
+	})
+
+	utils.SortVersions(versionList, func(version string) string {
+		return version
+	})
+	return versionList, cobra.ShellCompDirectiveKeepOrder
+}
+
+func (v versionManagerImpl) RemoteVersionList(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective) {
+	remoteVersions, err := v.client.ListAllReleases()
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	return toVersionList(remoteVersions), cobra.ShellCompDirectiveKeepOrder
+}
+
+func toVersionList(versions []models.VersionInfo) []string {
+	versionList := utils.Map(versions, func(release models.VersionInfo) string {
+		return release.Version
+	})
+
+	utils.SortVersions(versionList, func(version string) string {
+		return version
+	})
+
+	return versionList
 }

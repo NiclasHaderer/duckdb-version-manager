@@ -12,6 +12,7 @@ var runCmd = &cobra.Command{
 	Args:                  cobra.MinimumNArgs(1),
 	DisableFlagParsing:    true,
 	DisableFlagsInUseLine: true,
+	ValidArgsFunction:     manager.Run.LocalVersionList,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := manager.Run.Run(args[0], args[1:])
 		if err != nil {

@@ -22,12 +22,13 @@ func init() {
 	File = Dir + "/config.json"
 	VersionDir = Dir + "/versions"
 	binaryDir := homeDir + "/.local/bin"
+	DefaultDuckdbFile = binaryDir + "/duckdb"
+	DuckmanBinaryFile = binaryDir + "/duckman"
+
 	if deviceInfo.Platform == "windows" {
-		DefaultDuckdbFile = binaryDir + "/duckdb" + ".exe"
-	} else {
-		DefaultDuckdbFile = binaryDir + "/duckdb"
+		DefaultDuckdbFile += ".exe"
+		DuckmanBinaryFile += ".exe"
 	}
-	DuckmanBinaryFile = binaryDir + "/duckman.exe"
 
 	// Ensure the directories exist
 	err = os.MkdirAll(VersionDir, 0700)

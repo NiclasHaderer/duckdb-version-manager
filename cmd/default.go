@@ -8,9 +8,10 @@ import (
 
 // defaultCmd represents the default command
 var defaultCmd = &cobra.Command{
-	Use:   "default [version]",
-	Short: "Set a version of DuckDB as default one to use.",
-	Args:  cobra.ExactArgs(1),
+	Use:               "default [version]",
+	Short:             "Set a version of DuckDB as default one to use.",
+	Args:              cobra.ExactArgs(1),
+	ValidArgsFunction: manager.Run.LocalVersionList,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := manager.Run.SetDefaultVersion(&args[0])
 		if err != nil {
