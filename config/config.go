@@ -11,6 +11,7 @@ var Dir string
 var VersionDir string
 var DefaultDuckdbFile string
 var DuckmanBinaryFile string
+var DuckDBName = "duckdb"
 
 func init() {
 	homeDir, err := os.UserHomeDir()
@@ -22,7 +23,7 @@ func init() {
 	File = Dir + "/config.json"
 	VersionDir = Dir + "/versions"
 	binaryDir := homeDir + "/.local/bin"
-	DefaultDuckdbFile = binaryDir + "/duckdb"
+	DefaultDuckdbFile = binaryDir + "/" + DuckDBName
 	DuckmanBinaryFile = binaryDir + "/duckman"
 
 	if deviceInfo.Platform == "windows" {

@@ -54,7 +54,7 @@ func (v versionManagerImpl) InstallVersion(version string) stacktrace.Error {
 		return err
 	}
 
-	fileLocation := config.VersionDir + "/" + release.Version
+	fileLocation := config.VersionDir + "/" + config.DuckDBName + "-" + release.Version
 	if err := os.WriteFile(fileLocation, duckDb, 0700); err != nil {
 		return stacktrace.Wrap(err)
 	}
