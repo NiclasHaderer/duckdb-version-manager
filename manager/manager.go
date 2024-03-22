@@ -24,7 +24,6 @@ type VersionManager interface {
 	GetLocalReleaseInfo(version string) (*models.LocalInstallationInfo, stacktrace.Error)
 	LocalVersionList(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective)
 	RemoteVersionList(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective)
-	saveLocalConfig() stacktrace.Error
 }
 
 type versionManagerImpl struct {
@@ -32,12 +31,7 @@ type versionManagerImpl struct {
 	localConfig models.LocalConfig
 }
 
-func (v versionManagerImpl) saveLocalConfig() stacktrace.Error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (v versionManagerImpl) InstallVersion(version string) stacktrace.Error {
+func (v *versionManagerImpl) InstallVersion(version string) stacktrace.Error {
 	release, err := v.client.GetRelease(version)
 	if err != nil {
 		return err
@@ -69,7 +63,7 @@ func (v versionManagerImpl) InstallVersion(version string) stacktrace.Error {
 	return v.saveConfig()
 }
 
-func (v versionManagerImpl) UninstallVersion(unreliableVersion string) stacktrace.Error {
+func (v *versionManagerImpl) UninstallVersion(unreliableVersion string) stacktrace.Error {
 	if !v.VersionIsInstalled(unreliableVersion) {
 		return stacktrace.NewF("Version '%s' not installed", unreliableVersion)
 	}
@@ -77,25 +71,25 @@ func (v versionManagerImpl) UninstallVersion(unreliableVersion string) stacktrac
 	release, _ := v.GetLocalReleaseInfo(unreliableVersion)
 
 	// Check if the version is the default version
-	if v.localConfig.DefaultVersion == &release.Version {
+	if v.localConfig.DefaultVersion != nil && *v.localConfig.DefaultVersion == release.Version {
 		err := v.SetDefaultVersion(nil)
 		if err != nil {
 			return err
 		}
 	}
 
-	if err := os.Remove(v.localConfig.LocalInstallations[release.Version].Location); err != nil {
+	if err := os.Remove(v.localConfig.LocalInstallations[release.Version].Location); err != nil && !os.IsNotExist(err) {
 		return stacktrace.Wrap(err)
 	}
 	delete(v.localConfig.LocalInstallations, release.Version)
 	return v.saveConfig()
 }
 
-func (v versionManagerImpl) ListInstalledVersions() []models.LocalInstallationInfo {
+func (v *versionManagerImpl) ListInstalledVersions() []models.LocalInstallationInfo {
 	return utils.Values(v.localConfig.LocalInstallations)
 }
 
-func (v versionManagerImpl) GetDefaultVersion() *models.LocalInstallationInfo {
+func (v *versionManagerImpl) GetDefaultVersion() *models.LocalInstallationInfo {
 	if v.localConfig.DefaultVersion == nil {
 		return nil
 	}
@@ -103,7 +97,7 @@ func (v versionManagerImpl) GetDefaultVersion() *models.LocalInstallationInfo {
 	return &tmp
 }
 
-func (v versionManagerImpl) SetDefaultVersion(version *string) stacktrace.Error {
+func (v *versionManagerImpl) SetDefaultVersion(version *string) stacktrace.Error {
 	if _, err := os.Lstat(config.DefaultDuckdbFile); err == nil {
 		err := os.Remove(config.DefaultDuckdbFile)
 		if err != nil {
@@ -132,7 +126,7 @@ func (v versionManagerImpl) SetDefaultVersion(version *string) stacktrace.Error 
 	return v.saveConfig()
 }
 
-func (v versionManagerImpl) saveConfig() stacktrace.Error {
+func (v *versionManagerImpl) saveConfig() stacktrace.Error {
 	configAsBytes, err := json.MarshalIndent(v.localConfig, "", "  ")
 	if err != nil {
 		return stacktrace.Wrap(err)
@@ -145,7 +139,7 @@ func (v versionManagerImpl) saveConfig() stacktrace.Error {
 	return nil
 }
 
-func (v versionManagerImpl) Run(version string, args []string) stacktrace.Error {
+func (v *versionManagerImpl) Run(version string, args []string) stacktrace.Error {
 	if !v.VersionIsInstalled(version) {
 		err := v.InstallVersion(version)
 		if err != nil {
@@ -171,7 +165,7 @@ func (v versionManagerImpl) Run(version string, args []string) stacktrace.Error 
 	return nil
 }
 
-func (v versionManagerImpl) VersionIsInstalled(version string) bool {
+func (v *versionManagerImpl) VersionIsInstalled(version string) bool {
 	_, ok := v.localConfig.LocalInstallations[version]
 
 	if !ok {
@@ -182,7 +176,7 @@ func (v versionManagerImpl) VersionIsInstalled(version string) bool {
 	return ok
 }
 
-func (v versionManagerImpl) GetLocalReleaseInfo(version string) (*models.LocalInstallationInfo, stacktrace.Error) {
+func (v *versionManagerImpl) GetLocalReleaseInfo(version string) (*models.LocalInstallationInfo, stacktrace.Error) {
 	li, ok := v.localConfig.LocalInstallations[version]
 	if !ok {
 		li, ok = v.localConfig.LocalInstallations["v"+version]
@@ -193,7 +187,7 @@ func (v versionManagerImpl) GetLocalReleaseInfo(version string) (*models.LocalIn
 	return &li, nil
 }
 
-func (v versionManagerImpl) LocalVersionList(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective) {
+func (v *versionManagerImpl) LocalVersionList(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 	installedVersions := v.ListInstalledVersions()
 	versionList := utils.Map(installedVersions, func(li models.LocalInstallationInfo) string {
 		return li.Version
@@ -205,7 +199,7 @@ func (v versionManagerImpl) LocalVersionList(cmd *cobra.Command, args []string, 
 	return versionList, cobra.ShellCompDirectiveKeepOrder
 }
 
-func (v versionManagerImpl) RemoteVersionList(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective) {
+func (v *versionManagerImpl) RemoteVersionList(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 	remoteVersions, err := v.client.ListAllReleases()
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveNoFileComp

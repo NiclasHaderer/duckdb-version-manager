@@ -22,6 +22,9 @@ func NewF(format string, args ...any) Error {
 }
 
 func Wrap(error error) Error {
+	if error == nil {
+		return nil
+	}
 	return trackableError{
 		error,
 		string(debug.Stack()),

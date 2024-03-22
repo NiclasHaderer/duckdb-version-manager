@@ -1,6 +1,7 @@
 package config
 
 import (
+	"duckdb-version-manager/stacktrace"
 	"duckdb-version-manager/utils"
 	"log"
 	"os"
@@ -13,7 +14,17 @@ var DefaultDuckdbFile string
 var DuckmanBinaryFile string
 var DuckDBName = "duckdb"
 
+// Version Set using compile flags
+var Version string
+
 func init() {
+	if Version == "" {
+		utils.ExitWithError(stacktrace.New("Version not set using compile flags. Use -ldflags \"-X 'duckdb-version-manager/config.Version=1.0.0'\" to set the version."))
+	}
+	EnsureFoldersExist()
+}
+
+func EnsureFoldersExist() {
 	homeDir, err := os.UserHomeDir()
 	deviceInfo := utils.GetDeviceInfo()
 	if err != nil {

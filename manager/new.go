@@ -3,6 +3,7 @@ package manager
 import (
 	"duckdb-version-manager/api"
 	"duckdb-version-manager/config"
+	"duckdb-version-manager/manager/migrations"
 	"duckdb-version-manager/models"
 	"duckdb-version-manager/stacktrace"
 	"duckdb-version-manager/utils"
@@ -12,37 +13,29 @@ import (
 
 var Run VersionManager
 
-func create() (VersionManager, stacktrace.Error) {
-	// If the config file doesn't exist, create it
-	if _, err := os.Stat(config.File); os.IsNotExist(err) {
-		err := os.WriteFile(config.File, []byte("{\"localInstallations\": {}}"), 0600)
-		if err != nil {
-			return nil, stacktrace.Wrap(err)
-		}
+func init() {
+	if tmpErr := createConfigIfNotExists(); tmpErr != nil {
+		utils.ExitWithError(tmpErr)
+	}
+
+	if tmpErr := migrations.Run(); tmpErr != nil {
+		utils.ExitWithError(tmpErr)
 	}
 
 	// Read the config file
 	bytes, err := os.ReadFile(config.File)
 	if err != nil {
-		return nil, stacktrace.Wrap(err)
+		utils.ExitWithError(stacktrace.Wrap(err))
 	}
 
 	var localConfig models.LocalConfig
 	err = json.Unmarshal(bytes, &localConfig)
 	if err != nil {
-		return nil, stacktrace.Wrap(err)
+		utils.ExitWithError(stacktrace.Wrap(err))
 	}
 
-	return &versionManagerImpl{
+	Run = &versionManagerImpl{
 		localConfig: localConfig,
 		client:      api.New(),
-	}, nil
-}
-
-func init() {
-	var err stacktrace.Error
-	Run, err = create()
-	if err != nil {
-		utils.ExitWithError(err)
 	}
 }

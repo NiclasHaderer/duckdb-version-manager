@@ -46,3 +46,6 @@ if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
     echo "Add it to your PATH by adding the following line to your shell's configuration file:"
     echo "export PATH=\"\$HOME/.local/bin:\$PATH\""
 fi
+
+echo "To get autocomplete for duckman, add the following line to your shell's configuration file:"
+echo "eval \"\$(duckman completion <zsh|bash|fish>)\""
