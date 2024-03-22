@@ -7,7 +7,7 @@ main_file = str(Path(__file__).parent.parent / "main.go")
 
 
 def run_process(*args: str) -> str:
-    args = ["go", "run", "-ldflags", "-X 'duckdb-version-manager/cmd.version=dev'", main_file, *args]
+    args = ["go", "run", "-ldflags", "-X 'duckdb-version-manager/config.Version=100.0.0'", main_file, *args]
     result = subprocess.run(
         args,
         capture_output=True,
