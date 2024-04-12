@@ -2,16 +2,10 @@
 
 ### Installation
 
-For **MacOS** and **Linux**, run the following command in your terminal:
+For **macOS** and **Linux**, run the following command in your terminal:
 
 ```bash
-curl https://raw.githubusercontent.com/NiclasHaderer/duckdb-version-manager/main/install.sh -s | /bin/bash
-```
-To get auto-completion for your shell, put the following in your shell's rc file:
-
-```bash
-# Support for bash, fish, zsh and powershell included (just replace zsh with your shell)
-eval "$(duckman completion zsh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/NiclasHaderer/duckdb-version-manager/main/install.sh)"
 ```
 
 > [!WARNING]

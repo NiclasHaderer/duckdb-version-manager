@@ -61,11 +61,10 @@ function setupShells() {
 	echo "Setting up shell completions and PATH..."
 
 	# Bash
-	bash_rc="$HOME/.bashrc"
-	if [ -f "bash_rc" ]; then
+	if [ -f "$HOME/.bashrc"  ]; then
 		echo "Configuring bash"
-		appendIfNotPresent "$bash_rc" "export PATH=\"\$HOME/.local/bin:\$PATH\""
-		appendIfNotPresent "$bash_rc" "eval \"\$(duckman completion bash)\""
+		appendIfNotPresent "$HOME/.bashrc" "export PATH=\"\$HOME/.local/bin:\$PATH\""
+		appendIfNotPresent "$HOME/.bashrc" "eval \"\$(duckman completion bash)\""
 	fi
 
 	# Zsh
@@ -96,17 +95,11 @@ function printShellHelp() {
 
 download
 
-echo "Do you want duckman to setup autocomplete and PATH for you?"
-select yn in "Yes" "No"; do
-	case $yn in
-	Yes)
-		setupShells
-		break
-		;;
-	No)
-		printShellHelp
-		break
-		;;
-	*) echo "Answer with 1 or 2" ;;
-	esac
+while true; do
+    read -rp "Do you want duckman to setup autocomplete and PATH for you? (y/n) " yn
+    case $yn in
+        [Yy]* ) setupShells; break;;
+        [Nn]* ) printShellHelp; break;;
+        * ) echo "Please answer yes or no.";;
+    esac
 done
