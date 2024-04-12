@@ -139,6 +139,42 @@ func (v *versionManagerImpl) saveConfig() stacktrace.Error {
 	return nil
 }
 
+func exec(args []string) stacktrace.Error {
+	device := utils.GetDeviceInfo()
+	if device.Platform == models.PlatformWindows {
+		return execWindows(args)
+	} else {
+		return execUnix(args)
+	}
+}
+
+func execWindows(args []string) stacktrace.Error {
+	env := os.Environ()
+	procAttr := &os.ProcAttr{
+		Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
+		Env:   env,
+	}
+
+	process, err := os.StartProcess(args[0], args, procAttr)
+	if err != nil {
+		return stacktrace.Wrap(err)
+	}
+
+	_, err = process.Wait()
+	if err != nil {
+		return stacktrace.Wrap(err)
+	}
+	return nil
+}
+
+func execUnix(args []string) stacktrace.Error {
+	err := syscall.Exec(args[0], args, os.Environ())
+	if err != nil {
+		return stacktrace.Wrap(err)
+	}
+	return nil
+}
+
 func (v *versionManagerImpl) Run(version string, args []string) stacktrace.Error {
 	if !v.VersionIsInstalled(version) {
 		err := v.InstallVersion(version)
@@ -158,11 +194,7 @@ func (v *versionManagerImpl) Run(version string, args []string) stacktrace.Error
 	}
 
 	args = utils.Prepend(args, release.Location)
-	err := syscall.Exec(args[0], args, os.Environ())
-	if err != nil {
-		return stacktrace.Wrap(err)
-	}
-	return nil
+	return exec(args)
 }
 
 func (v *versionManagerImpl) VersionIsInstalled(version string) bool {
