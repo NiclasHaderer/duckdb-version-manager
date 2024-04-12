@@ -117,13 +117,23 @@ func (v *versionManagerImpl) SetDefaultVersion(version *string) stacktrace.Error
 	}
 
 	versionToInstall, _ := v.GetLocalReleaseInfo(*version)
-	err := os.Symlink(versionToInstall.Location, config.DefaultDuckdbFile)
+	err := v.symlink(versionToInstall.Location, config.DefaultDuckdbFile)
 	if err != nil {
-		return stacktrace.Wrap(err)
+		return err
 	}
 
 	v.localConfig.DefaultVersion = &versionToInstall.Version
 	return v.saveConfig()
+}
+
+func (v *versionManagerImpl) symlink(from string, to string) stacktrace.Error {
+	deviceInfo := utils.GetDeviceInfo()
+	if deviceInfo.Platform == models.PlatformWindows {
+		return utils.CopyFile(from, to)
+	} else {
+		err := os.Symlink(from, to)
+		return stacktrace.Wrap(err)
+	}
 }
 
 func (v *versionManagerImpl) saveConfig() stacktrace.Error {

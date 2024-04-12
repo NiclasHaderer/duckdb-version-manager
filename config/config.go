@@ -1,6 +1,7 @@
 package config
 
 import (
+	"duckdb-version-manager/models"
 	"duckdb-version-manager/stacktrace"
 	"duckdb-version-manager/utils"
 	"log"
@@ -37,7 +38,7 @@ func EnsureFoldersExist() {
 	DefaultDuckdbFile = binaryDir + "/" + DuckDBName
 	DuckmanBinaryFile = binaryDir + "/duckman"
 
-	if deviceInfo.Platform == "windows" {
+	if deviceInfo.Platform == models.PlatformWindows {
 		DefaultDuckdbFile += ".exe"
 		DuckmanBinaryFile += ".exe"
 	}

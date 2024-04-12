@@ -2,6 +2,7 @@ package utils
 
 import (
 	"duckdb-version-manager/stacktrace"
+	"io"
 	"os"
 )
 
@@ -12,4 +13,27 @@ func RemoveFileOrDie(file string) {
 			ExitWithError(stacktrace.Wrap(err))
 		}
 	}
+}
+
+func CopyFile(src, dst string) stacktrace.Error {
+	srcFile, err := os.Open(src)
+	if err != nil {
+		return stacktrace.Wrap(err)
+	}
+
+	defer srcFile.Close()
+
+	dstFile, err := os.Create(dst)
+	if err != nil {
+		return stacktrace.Wrap(err)
+	}
+
+	defer dstFile.Close()
+
+	_, err = io.Copy(dstFile, srcFile)
+	if err != nil {
+		return stacktrace.Wrap(err)
+	}
+
+	return nil
 }
