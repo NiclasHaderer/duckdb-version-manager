@@ -8,11 +8,14 @@ For **macOS** and **Linux**, run the following command in your terminal:
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/NiclasHaderer/duckdb-version-manager/main/install.sh)"
 ```
 
+For **Windows**, run the following command in your powershell terminal:
+
 > [!WARNING]
-> Windows has not been tested yet, so use at your own risk.  
-> Download the latest binary from the [release page](https://github.com/NiclasHaderer/duckdb-version-manager/releases)
-> and save it as *$HOME/.local/bin/duckman.exe*.
-> Then add *$HOME/.local/bin* to your PATH.
+> Windows has not been propperly tested yet, but the basic functionality should work.
+
+```powershell
+Invoke-Expression (Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/NiclasHaderer/duckdb-version-manager/main/install.ps1").Content
+```
 
 ### Usage
 

@@ -1,16 +1,11 @@
-# Define the URL
 $URL = "https://raw.githubusercontent.com/NiclasHaderer/duckdb-version-manager/main/versions/latest-vm.json"
 
-# Function to download and install duckman
 function Download-Duckman {
-    # Define download directory
     $DownloadDir = "$env:USERPROFILE\.local\bin"
     New-Item -ItemType Directory -Path $DownloadDir -Force | Out-Null
 
-    # Get JSON content
     $JsonContent = Invoke-RestMethod -Uri $URL
 
-    # Get OS and Architecture
     $OS = $ENV:OS
     $Arch = $ENV:PROCESSOR_ARCHITECTURE
 
@@ -31,7 +26,6 @@ function Download-Duckman {
         }
     }
 
-    # Get download URL
     $DownloadUrl = $JsonContent.platforms.$OSKey.$ArchKey.downloadUrl
 
     if ($DownloadUrl -eq $null) {
@@ -44,24 +38,19 @@ function Download-Duckman {
     Write-Host "Download complete. duckman is now available in $DownloadDir\duckman.exe"
 }
 
-# Function to append line to file if not present
 function Append-IfNotPresent {
     param (
         [string]$File,
         [string]$Line
     )
-    # Check if the line is already present in the file
     $match = Get-Content -Path $File | Where-Object { $_ -eq $Line }
 
     if (-not $match) {
-        # If the line is not present, append it to the file
         Add-Content -Path $File -Value $Line
     }
 }
 
 
-# Function to setup shells
-# Function to setup shells
 function Setup-Shells {
     Write-Host "Setting up PATH..."
 
@@ -76,7 +65,6 @@ function Setup-Shells {
 }
 
 
-# Function to print shell help
 function Print-ShellHelp {
     if (-not ($env:PATH -like "*$env:USERPROFILE\.local\bin*")) {
         Write-Host ""
@@ -84,14 +72,15 @@ function Print-ShellHelp {
     }
 }
 
-Download-Duckman
 
-# Prompt user for setup
 while ($true) {
     $yn = Read-Host "Do you want duckman to setup autocomplete and PATH for you? (y/n)"
     switch ($yn.ToLower()) {
-        "y" { Setup-Shells; exit }
-        "n" { Print-ShellHelp; exit }
+        "y" { Setup-Shells; break }
+        "n" { Print-ShellHelp; break }
         default { Write-Host "Please answer yes or no." }
+    }
+    if ($yn.ToLower() -eq 'y' -or $yn.ToLower() -eq 'n') {
+        break
     }
 }
