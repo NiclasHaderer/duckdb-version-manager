@@ -13,7 +13,7 @@ fi
 BINARY_NAME="duckman"
 OUTPUT_DIR="bin"
 GOOS_ARRAY=("darwin" "darwin" "linux" "linux" "windows" "windows")
-GOARCH_ARRAY=("amd64" "arm64" "amd64" "arm" "amd64" "arm")
+GOARCH_ARRAY=("amd64" "arm64" "amd64" "arm64" "amd64" "arm64")
 
 # Create output directory
 rm -r $OUTPUT_DIR
