@@ -64,3 +64,14 @@ def run_default(*args: str) -> str:
     binary = install_dir / binary
     result = subprocess.run([str(binary), *args], capture_output=True, text=True)
     return result.stdout
+
+
+def compile_once():
+    args = ["go", "build", "-ldflags", "-X 'duckdb-version-manager/config.Version=100.0.0'", main_file]
+    result = subprocess.run(
+        args,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise ValueError(result.stdout + result.stderr)

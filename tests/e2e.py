@@ -7,6 +7,7 @@ class TestE2E(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        duck_vm.compile_once()
         local_versions = duck_vm.list_local_versions(True)
         for version in local_versions:
             duck_vm.uninstall_version(version)
