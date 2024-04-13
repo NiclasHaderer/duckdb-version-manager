@@ -1,5 +1,5 @@
 # DuckDB Version Manager
-
+[![Tests](https://github.com/NiclasHaderer/duckdb-version-manager/actions/workflows/test.yml/badge.svg)](https://github.com/NiclasHaderer/duckdb-version-manager/actions/workflows/test.yml)
 ### Installation
 
 For **macOS** and **Linux**, run the following command in your terminal:

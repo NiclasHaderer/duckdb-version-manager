@@ -43,6 +43,9 @@ func (v *versionManagerImpl) InstallVersion(version string) stacktrace.Error {
 	}
 
 	githubAsset, err := utils.GetResponseBodyFrom(v.client.Get(), *downloadUrl)
+	if err != nil {
+		return err
+	}
 	duckDb, err := utils.ExtractDuckdbFile(githubAsset)
 	if err != nil {
 		return err
