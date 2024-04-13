@@ -10,9 +10,6 @@ For **macOS** and **Linux**, run the following command in your terminal:
 
 For **Windows**, run the following command in your powershell terminal:
 
-> [!WARNING]
-> Windows has not been propperly tested yet, but the basic functionality should work.
-
 ```powershell
 Invoke-Expression (Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/NiclasHaderer/duckdb-version-manager/main/install.ps1").Content
 ```
