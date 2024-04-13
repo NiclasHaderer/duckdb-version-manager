@@ -22,3 +22,4 @@ go.work
 .idea
 __pycache__
 bin
+.Ds_Store

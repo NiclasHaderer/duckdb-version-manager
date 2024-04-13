@@ -25,10 +25,13 @@ def install_version(version: str) -> str:
     return run_process("install", version)
 
 
-def list_local_versions() -> list[str]:
+def list_local_versions(print_output=False) -> list[str]:
     out = run_process("list", "local")
     regex = re.compile(r"^.*?((?:\d|\.|v){3,}|nightly)", re.M)
     installed_versions = re.findall(regex, out)
+    if print_output:
+        print(out)
+        print(installed_versions)
     return installed_versions
 
 
