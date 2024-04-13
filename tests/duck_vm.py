@@ -1,3 +1,4 @@
+import os
 import re
 import subprocess
 import sys
@@ -26,14 +27,16 @@ def install_version(version: str) -> str:
 
 def list_local_versions() -> list[str]:
     out = run_process("list", "local")
-    regex = r"  ((?:\w|\.|[09])+)"
-    return re.findall(regex, out)
+    regex = re.compile(r"^.*?((?:\d|\.|v){3,}|nightly)", re.M)
+    installed_versions = re.findall(regex, out)
+    return installed_versions
 
 
 def list_remote_versions() -> list[str]:
     out = run_process("list", "remote")
-    regex = r"  ((?:\w|\.|[09])+)"
-    return re.findall(regex, out)
+    regex = re.compile(r"^.*?((?:\d|\.|v){3,}|nightly)", re.M)
+    remote_versions = re.findall(regex, out)
+    return remote_versions
 
 
 def set_version_as_default(version: str) -> str:
@@ -49,8 +52,12 @@ def uninstall_version(version: str) -> str:
 
 
 def run_default(*args: str) -> str:
+    home_dir = Path.home()
+    install_dir = home_dir / ".local" / "bin"
     binary = "duckdb"
     if sys.platform == "win32":
         binary += ".exe"
-    result = subprocess.run([binary, *args], capture_output=True, text=True)
+
+    binary = install_dir / binary
+    result = subprocess.run([str(binary), *args], capture_output=True, text=True)
     return result.stdout

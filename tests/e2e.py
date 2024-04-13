@@ -49,8 +49,8 @@ class TestE2E(unittest.TestCase):
         try:
             duck_vm.run_default("--version")
             self.fail("Should not be able to run default version")
-        except FileNotFoundError as e:
-            self.assertIn("No such file or directory: 'duckdb'", str(e))
+        except FileNotFoundError:
+            pass
 
     def test_run_nightly(self):
         duck_vm.run_version("nightly", "--version")
