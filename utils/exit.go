@@ -6,11 +6,19 @@ import (
 	"os"
 )
 
-// TODO add a before-exit hook that allows to run some code (e.g. check if the version manager is up-to-date)
+var beforeExitHooks []func(err stacktrace.Error)
 
-func exitWith(format string, v ...any) {
-	fmt.Printf(format, v...)
-	fmt.Printf("\n")
+func BeforeErrorExit(f func(err stacktrace.Error)) {
+	beforeExitHooks = append(beforeExitHooks, f)
+}
+
+func exitWith(format string, err stacktrace.Error) {
+	fmt.Print(format)
+	fmt.Print("\n")
+
+	for _, f := range beforeExitHooks {
+		f(err)
+	}
 	os.Exit(1)
 }
 
@@ -24,5 +32,5 @@ func ExitWithError(err stacktrace.Error) {
 		errorMsg = fmt.Sprintf("%s", err)
 	}
 
-	exitWith(errorMsg)
+	exitWith(errorMsg, err)
 }

@@ -2,6 +2,7 @@ package list
 
 import (
 	"duckdb-version-manager/api"
+	"duckdb-version-manager/manager"
 	"fmt"
 	"github.com/spf13/cobra"
 	"log"
@@ -20,5 +21,6 @@ var RemoteCmd = &cobra.Command{
 		for _, release := range releases {
 			fmt.Printf("  %s\n", release.Version)
 		}
+		manager.Run.ShowUpdateWarning()
 	},
 }

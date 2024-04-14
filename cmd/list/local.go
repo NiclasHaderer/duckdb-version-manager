@@ -25,5 +25,6 @@ var LocalCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		entries := manager.Run.ListInstalledVersions()
 		printVersions(entries)
+		manager.Run.ShowUpdateWarning()
 	},
 }

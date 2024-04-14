@@ -18,6 +18,7 @@ var runCmd = &cobra.Command{
 		if err != nil {
 			utils.ExitWithError(err)
 		}
+		manager.Run.ShowUpdateWarning()
 	},
 }
 
