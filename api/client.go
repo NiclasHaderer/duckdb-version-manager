@@ -5,6 +5,7 @@ import (
 	"duckdb-version-manager/stacktrace"
 	"encoding/json"
 	"net/http"
+	"time"
 )
 
 type Client interface {
@@ -13,7 +14,7 @@ type Client interface {
 	GetReleaseWithLocation(versionPath string) (*models.Release, stacktrace.Error)
 	ListAllReleases() (models.VersionList, stacktrace.Error)
 	ListAllReleasesDict() (models.VersionDict, stacktrace.Error)
-	LatestDuckVmRelease() (*models.Release, stacktrace.Error)
+	LatestDuckVmRelease(timeout time.Duration) (*models.Release, stacktrace.Error)
 	Get() *http.Client
 }
 
@@ -102,10 +103,14 @@ func (c clientImpl) GetReleaseWithLocation(versionPath string) (*models.Release,
 	return &release, nil
 }
 
-func (c clientImpl) LatestDuckVmRelease() (*models.Release, stacktrace.Error) {
+func (c clientImpl) LatestDuckVmRelease(timeout time.Duration) (*models.Release, stacktrace.Error) {
 	url := c.Host + c.BasePath + "/latest-vm.json"
 
-	resp, err := c.Client.Get(url)
+	client := &http.Client{
+		Timeout: timeout,
+	}
+
+	resp, err := client.Get(url)
 	if err != nil {
 		return nil, stacktrace.Wrap(err)
 	}

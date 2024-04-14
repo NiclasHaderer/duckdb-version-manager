@@ -6,6 +6,8 @@ import (
 	"os"
 )
 
+// TODO add a before-exit hook that allows to run some code (e.g. check if the version manager is up-to-date)
+
 func exitWith(format string, v ...any) {
 	fmt.Printf(format, v...)
 	fmt.Printf("\n")

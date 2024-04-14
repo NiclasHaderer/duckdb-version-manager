@@ -7,6 +7,7 @@ import (
 	"duckdb-version-manager/utils"
 	"github.com/spf13/cobra"
 	"os"
+	"time"
 )
 
 var updateSelfCmd = &cobra.Command{
@@ -14,7 +15,7 @@ var updateSelfCmd = &cobra.Command{
 	Short: "Updates duckman to the latest version",
 	Run: func(cmd *cobra.Command, args []string) {
 		client := api.New()
-		release, err := client.LatestDuckVmRelease()
+		release, err := client.LatestDuckVmRelease(time.Minute * 5)
 		if err != nil {
 			utils.ExitWithError(err)
 		}

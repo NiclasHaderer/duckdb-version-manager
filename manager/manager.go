@@ -7,6 +7,8 @@ import (
 	"duckdb-version-manager/stacktrace"
 	"duckdb-version-manager/utils"
 	"encoding/json"
+	"fmt"
+	"github.com/hashicorp/go-version"
 	"github.com/spf13/cobra"
 	"os"
 	"syscall"
@@ -24,6 +26,7 @@ type VersionManager interface {
 	GetLocalReleaseInfo(version string) (*models.LocalInstallationInfo, stacktrace.Error)
 	LocalVersionList(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective)
 	RemoteVersionList(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective)
+	ShowUpdateWarning()
 }
 
 type versionManagerImpl struct {
@@ -251,6 +254,20 @@ func (v *versionManagerImpl) RemoteVersionList(_ *cobra.Command, _ []string, _ s
 	}
 
 	return toVersionList(remoteVersions), cobra.ShellCompDirectiveKeepOrder
+}
+
+func (v *versionManagerImpl) ShowUpdateWarning() {
+	latestRelease, err := v.client.LatestDuckVmRelease(time.Millisecond * 100)
+	if err != nil {
+		return
+	}
+
+	remoteVersion := version.Must(version.NewVersion(latestRelease.Version))
+	localVersion := version.Must(version.NewVersion(config.Version))
+
+	if remoteVersion.GreaterThan(localVersion) {
+		fmt.Println("\nA new version of duckman is available. Run 'duckman update-self' to update.")
+	}
 }
 
 func toVersionList(versions []models.VersionInfo) []string {
