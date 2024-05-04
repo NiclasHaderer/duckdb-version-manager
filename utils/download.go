@@ -22,7 +22,7 @@ func GetResponseBodyFrom(client *http.Client, url string) ([]byte, stacktrace.Er
 	return body, nil
 }
 
-func GetDownloadUrlFrom(release *models.Release) (*string, stacktrace.Error) {
+func GetDownloadUrlFrom(release *models.VersionInformation) (*string, stacktrace.Error) {
 	sysInfo := GetDeviceInfo()
 
 	platform, ok := release.Platforms[sysInfo.Platform]

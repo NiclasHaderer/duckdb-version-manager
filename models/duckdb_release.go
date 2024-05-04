@@ -1,11 +1,13 @@
 package models
 
-type Releases = map[string]Release
+type VersionStr = string
 
-type Release struct {
-	Version   string    `json:"version"`
-	Name      string    `json:"name"`
-	Platforms Platforms `json:"platforms"`
+// Models that describe a specific version of DuckDB
+
+type VersionInformation struct {
+	Version   VersionStr `json:"version"`
+	Name      string     `json:"name"`
+	Platforms Platforms  `json:"platforms"`
 }
 
 type Platforms = map[PlatformType]Architectures
@@ -16,14 +18,13 @@ type ArchitectureReleaseInformation struct {
 	DownloadUrl string `json:"downloadUrl"`
 }
 
-type Version = string
-type RelativeVersionLocation = string
-type VersionDict = map[Version]RelativeVersionLocation
+// Models that describe the overview of the remote versions, not the remote versions themselves
 
-// List of tuples
+type RemoteVersionPath = string
+type RemoteVersionDict = map[VersionStr]RemoteVersionPath
 
-type VersionInfo struct {
-	Version                 Version
-	RelativeVersionLocation RelativeVersionLocation
+type RemoteVersionInfo struct {
+	Version                 VersionStr
+	RelativeVersionLocation RemoteVersionPath
 }
-type VersionList = []VersionInfo
+type RemoteVersions = []RemoteVersionInfo

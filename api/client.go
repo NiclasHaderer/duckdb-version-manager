@@ -3,18 +3,19 @@ package api
 import (
 	"duckdb-version-manager/models"
 	"duckdb-version-manager/stacktrace"
+	"duckdb-version-manager/utils"
 	"encoding/json"
 	"net/http"
 	"time"
 )
 
 type Client interface {
-	GetAllReleases() (models.Releases, stacktrace.Error)
-	GetRelease(version string) (*models.Release, stacktrace.Error)
-	GetReleaseWithLocation(versionPath string) (*models.Release, stacktrace.Error)
-	ListAllReleases() (models.VersionList, stacktrace.Error)
-	ListAllReleasesDict() (models.VersionDict, stacktrace.Error)
-	LatestDuckVmRelease(timeout time.Duration) (*models.Release, stacktrace.Error)
+	GetAllReleases() (map[models.VersionStr]models.VersionInformation, stacktrace.Error)
+	GetRelease(version string) (*models.VersionInformation, stacktrace.Error)
+	GetReleaseWithLocation(versionPath string) (*models.VersionInformation, stacktrace.Error)
+	ListAllReleases() (models.RemoteVersions, stacktrace.Error)
+	ListAllReleasesDict() (models.RemoteVersionDict, stacktrace.Error)
+	LatestDuckVmRelease(timeout time.Duration) (*models.VersionInformation, stacktrace.Error)
 	Get() *http.Client
 }
 
@@ -24,13 +25,13 @@ type clientImpl struct {
 	BasePath string
 }
 
-func (c clientImpl) GetAllReleases() (models.Releases, stacktrace.Error) {
+func (c clientImpl) GetAllReleases() (map[models.VersionStr]models.VersionInformation, stacktrace.Error) {
 	releaseDict, err := c.ListAllReleasesDict()
 	if err != nil {
 		return nil, stacktrace.Wrap(err)
 	}
 
-	finalReleases := make(models.Releases)
+	finalReleases := make(map[models.VersionStr]models.VersionInformation)
 	for version, versionPath := range releaseDict {
 		release, err := c.GetReleaseWithLocation(versionPath)
 		if err != nil {
@@ -42,7 +43,7 @@ func (c clientImpl) GetAllReleases() (models.Releases, stacktrace.Error) {
 	return finalReleases, nil
 }
 
-func (c clientImpl) ListAllReleasesDict() (models.VersionDict, stacktrace.Error) {
+func (c clientImpl) ListAllReleasesDict() (models.RemoteVersionDict, stacktrace.Error) {
 	url := c.Host + c.BasePath + "/versions.json"
 	resp, err := c.Client.Get(url)
 	if err != nil {
@@ -50,7 +51,7 @@ func (c clientImpl) ListAllReleasesDict() (models.VersionDict, stacktrace.Error)
 	}
 	defer resp.Body.Close()
 
-	var releases models.VersionDict
+	var releases models.RemoteVersionDict
 	err = json.NewDecoder(resp.Body).Decode(&releases)
 	if err != nil {
 		return nil, stacktrace.Wrap(err)
@@ -59,16 +60,16 @@ func (c clientImpl) ListAllReleasesDict() (models.VersionDict, stacktrace.Error)
 	return releases, nil
 }
 
-func (c clientImpl) ListAllReleases() (models.VersionList, stacktrace.Error) {
+func (c clientImpl) ListAllReleases() (models.RemoteVersions, stacktrace.Error) {
 	result, err := c.ListAllReleasesDict()
 	if err != nil {
 		return nil, err
 	}
 
-	return toVersionList(result), nil
+	return utils.ToVersionList(&result), nil
 }
 
-func (c clientImpl) GetRelease(version string) (*models.Release, stacktrace.Error) {
+func (c clientImpl) GetRelease(version string) (*models.VersionInformation, stacktrace.Error) {
 	versions, err := c.ListAllReleasesDict()
 	if err != nil {
 		return nil, err
@@ -85,7 +86,7 @@ func (c clientImpl) GetRelease(version string) (*models.Release, stacktrace.Erro
 	return c.GetReleaseWithLocation(versionPath)
 }
 
-func (c clientImpl) GetReleaseWithLocation(versionPath string) (*models.Release, stacktrace.Error) {
+func (c clientImpl) GetReleaseWithLocation(versionPath string) (*models.VersionInformation, stacktrace.Error) {
 	url := c.Host + c.BasePath + "/" + versionPath
 
 	resp, err := c.Client.Get(url)
@@ -94,7 +95,7 @@ func (c clientImpl) GetReleaseWithLocation(versionPath string) (*models.Release,
 	}
 	defer resp.Body.Close()
 
-	var release models.Release
+	var release models.VersionInformation
 	err = json.NewDecoder(resp.Body).Decode(&release)
 	if err != nil {
 		return nil, stacktrace.Wrap(err)
@@ -103,7 +104,7 @@ func (c clientImpl) GetReleaseWithLocation(versionPath string) (*models.Release,
 	return &release, nil
 }
 
-func (c clientImpl) LatestDuckVmRelease(timeout time.Duration) (*models.Release, stacktrace.Error) {
+func (c clientImpl) LatestDuckVmRelease(timeout time.Duration) (*models.VersionInformation, stacktrace.Error) {
 	url := c.Host + c.BasePath + "/latest-vm.json"
 
 	client := &http.Client{
@@ -116,7 +117,7 @@ func (c clientImpl) LatestDuckVmRelease(timeout time.Duration) (*models.Release,
 	}
 	defer resp.Body.Close()
 
-	var release models.Release
+	var release models.VersionInformation
 	err = json.NewDecoder(resp.Body).Decode(&release)
 	if err != nil {
 		return nil, stacktrace.Wrap(err)

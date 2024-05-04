@@ -270,8 +270,8 @@ func (v *versionManagerImpl) ShowUpdateWarning() {
 	}
 }
 
-func toVersionList(versions []models.VersionInfo) []string {
-	versionList := utils.Map(versions, func(release models.VersionInfo) string {
+func toVersionList(versions []models.RemoteVersionInfo) []string {
+	versionList := utils.Map(versions, func(release models.RemoteVersionInfo) string {
 		return release.Version
 	})
 
