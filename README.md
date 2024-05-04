@@ -1,5 +1,7 @@
 # DuckDB Version Manager
+
 [![Tests](https://github.com/NiclasHaderer/duckdb-version-manager/actions/workflows/test.yml/badge.svg)](https://github.com/NiclasHaderer/duckdb-version-manager/actions/workflows/test.yml)
+
 ### Installation
 
 For **macOS** and **Linux**, run the following command in your terminal:
@@ -15,6 +17,26 @@ Invoke-Expression (Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubus
 ```
 
 ### Usage
+
+```bash
+# Install a specific version of DuckDB (this does not set the version as default)
+duckman install 0.10.2
+
+# Set a version of DuckDB as default one to use -> now running duckdb will run this version
+duckman default 0.10.2
+
+# Run a version of DuckDB
+duckman run nightly
+
+# List available DuckDB versions
+duckman list remote
+```
+
+Generally, installing a version before running it or setting it as default is not necessary.
+If you want to run a version that is not installed, duckman will automatically download and install it for you.
+
+### Reference
+
 
 ```
 A version manager for DuckDB
