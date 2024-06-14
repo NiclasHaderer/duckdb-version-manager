@@ -19,6 +19,7 @@ function download() {
 	case "${ARCH}" in
 	x86_64) ARCH="ArchitectureX86" ;;
 	arm64) ARCH="ArchitectureArm64" ;;
+	aarch64) ARCH="ArchitectureArm64" ;;
 	*)
 		echo "Unsupported architecture: ${ARCH}"
 		exit 2
