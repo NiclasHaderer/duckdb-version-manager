@@ -4,23 +4,20 @@
   "platforms": {
     "PlatformWindows": {
       "ArchitectureX86": {
-        "downloadUrl": "https://github.com/duckdb/duckdb/actions/runs/10747041526/artifacts/1903662485"
-      },
-      "ArchitectureArm64": {
-        "downloadUrl": "https://github.com/duckdb/duckdb/actions/runs/10747041526/artifacts/1903719830"
-      }
-    },
-    "PlatformMac": {
-      "ArchitectureUniversal": {
-        "downloadUrl": "https://github.com/duckdb/duckdb/actions/runs/10692860753/artifacts/1889278837"
+        "downloadUrl": "https://artifacts.duckdb.org/latest/duckdb-binaries-windows.zip"
       }
     },
     "PlatformLinux": {
       "ArchitectureX86": {
-        "downloadUrl": "https://github.com/duckdb/duckdb/actions/runs/10730276697/artifacts/1899513062"
+        "downloadUrl": "https://artifacts.duckdb.org/latest/duckdb-binaries-linux.zip"
       },
       "ArchitectureArm64": {
-        "downloadUrl": "https://github.com/duckdb/duckdb/actions/runs/10730276697/artifacts/1899513064"
+        "downloadUrl": "https://artifacts.duckdb.org/latest/duckdb-binaries-linux-aarch64.zip"
+      }
+    },
+    "PlatformMac": {
+      "ArchitectureUniversal": {
+        "downloadUrl": "https://artifacts.duckdb.org/latest/duckdb-binaries-osx.zip"
       }
     }
   }
