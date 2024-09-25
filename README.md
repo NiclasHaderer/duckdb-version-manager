@@ -4,6 +4,8 @@
 
 ### Installation
 
+> **Note:** Before proceeding with the installation, it's advisable to uninstall or remove any existing DuckDB CLI versions that you may have installed manually or via brew.
+
 For **macOS** and **Linux**, run the following command in your terminal:
 
 ```bash
