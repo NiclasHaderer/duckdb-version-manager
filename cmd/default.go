@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// defaultCmd represents the default command
 var defaultCmd = &cobra.Command{
 	Use:               "default [version]",
 	Short:             "Set a version of DuckDB as default one to use.",
@@ -19,8 +18,4 @@ var defaultCmd = &cobra.Command{
 		}
 		manager.Run.ShowUpdateWarning()
 	},
-}
-
-func init() {
-	rootCmd.AddCommand(defaultCmd)
 }

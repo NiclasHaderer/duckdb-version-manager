@@ -19,7 +19,3 @@ var installCmd = &cobra.Command{
 		manager.Run.ShowUpdateWarning()
 	},
 }
-
-func init() {
-	rootCmd.AddCommand(installCmd)
-}

@@ -35,7 +35,3 @@ var updateSelfCmd = &cobra.Command{
 		}
 	},
 }
-
-func init() {
-	rootCmd.AddCommand(updateSelfCmd)
-}

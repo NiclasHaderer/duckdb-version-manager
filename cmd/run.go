@@ -14,14 +14,9 @@ var runCmd = &cobra.Command{
 	DisableFlagsInUseLine: true,
 	ValidArgsFunction:     manager.Run.LocalVersionList,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := manager.Run.Run(args[0], args[1:])
+		err := manager.Run.Version(args[0], args[1:])
 		if err != nil {
 			utils.ExitWithError(err)
 		}
-		manager.Run.ShowUpdateWarning()
 	},
-}
-
-func init() {
-	rootCmd.AddCommand(runCmd)
 }

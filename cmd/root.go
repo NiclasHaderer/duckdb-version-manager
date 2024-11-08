@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"duckdb-version-manager/config"
 	"duckdb-version-manager/models"
 	"duckdb-version-manager/utils"
 	"github.com/spf13/cobra"
@@ -27,8 +26,4 @@ func Execute() {
 	if err != nil {
 		os.Exit(1)
 	}
-}
-
-func init() {
-	rootCmd.Version = config.Version
 }

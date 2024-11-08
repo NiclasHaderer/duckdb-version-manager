@@ -21,7 +21,7 @@ type VersionManager interface {
 	ListInstalledVersions() []models.LocalInstallationInfo
 	GetDefaultVersion() *models.LocalInstallationInfo
 	SetDefaultVersion(version *string) stacktrace.Error
-	Run(version string, args []string) stacktrace.Error
+	Version(version string, args []string) stacktrace.Error
 	VersionIsInstalled(version string) bool
 	GetLocalReleaseInfo(version string) (*models.LocalInstallationInfo, stacktrace.Error)
 	LocalVersionList(cmd *cobra.Command, args []string, complete string) ([]string, cobra.ShellCompDirective)
@@ -191,7 +191,7 @@ func execUnix(args []string) stacktrace.Error {
 	return nil
 }
 
-func (v *versionManagerImpl) Run(version string, args []string) stacktrace.Error {
+func (v *versionManagerImpl) Version(version string, args []string) stacktrace.Error {
 	if !v.VersionIsInstalled(version) {
 		err := v.InstallVersion(version)
 		if err != nil {
@@ -266,7 +266,7 @@ func (v *versionManagerImpl) ShowUpdateWarning() {
 	localVersion := version.Must(version.NewVersion(config.Version))
 
 	if remoteVersion.GreaterThan(localVersion) {
-		fmt.Println("\nA new version of duckman is available. Run 'duckman update-self' to update.")
+		fmt.Println("\nA new version of duckman is available. Version 'duckman update-self' to update.")
 	}
 }
 

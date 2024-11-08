@@ -14,7 +14,7 @@ import (
 var Run VersionManager
 
 func init() {
-	if tmpErr := createConfigIfNotExists(); tmpErr != nil {
+	if tmpErr := config.CreateIfNotExists(); tmpErr != nil {
 		utils.ExitWithError(tmpErr)
 	}
 

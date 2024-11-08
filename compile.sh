@@ -5,7 +5,7 @@ VERSION=$1
 
 # Check if version is set
 if [ -z "$VERSION" ]; then
-	echo "Version not set"
+	echo "Version not set. Pass it as the first argument ./compile <version>"
 	exit 1
 fi
 

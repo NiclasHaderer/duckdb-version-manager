@@ -15,7 +15,3 @@ var uninstallSelfCmd = &cobra.Command{
 		utils.RemoveFileOrDie(config.DefaultDuckdbFile)
 	},
 }
-
-func init() {
-	rootCmd.AddCommand(uninstallSelfCmd)
-}
