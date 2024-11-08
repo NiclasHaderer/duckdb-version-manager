@@ -9,6 +9,14 @@ if [ -z "$VERSION" ]; then
 	exit 1
 fi
 
+# Check if the version is a valid one
+go run validate-version/validate.go "$VERSION"
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
+echo "Compiling duckman for version: $VERSION"
+
 # Variables
 BINARY_NAME="duckman"
 OUTPUT_DIR="bin"
