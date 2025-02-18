@@ -11,10 +11,10 @@ NIGHTLY_RELEASE: Release = {
         },
         "PlatformLinux": {
             "ArchitectureX86": {
-                "downloadUrl": "https://artifacts.duckdb.org/latest/duckdb-binaries-linux.zip",
+                "downloadUrl": "https://artifacts.duckdb.org/latest/duckdb-binaries-linux-amd64.zip",
             },
             "ArchitectureArm64": {
-                "downloadUrl": "https://artifacts.duckdb.org/latest/duckdb-binaries-linux-aarch64.zip",
+                "downloadUrl": "https://artifacts.duckdb.org/latest/duckdb-binaries-linux-arm64.zip",
             },
         },
         "PlatformMac": {
