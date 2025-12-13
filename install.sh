@@ -72,6 +72,7 @@ function setupShells() {
 	if [ -f "$HOME/.zshrc" ]; then
 		echo "Configuring zsh"
 		appendIfNotPresent "$HOME/.zshrc" "export PATH=\"\$HOME/.local/bin:\$PATH\""
+		appendIfNotPresent "$HOME/.zshrc" "autoload -Uz compinit 2>/dev/null && compinit 2>/dev/null"
 		appendIfNotPresent "$HOME/.zshrc" "eval \"\$(duckman completion zsh)\""
 	fi
 
