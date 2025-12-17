@@ -72,7 +72,12 @@ function setupShells() {
 	if [ -f "$HOME/.zshrc" ]; then
 		echo "Configuring zsh"
 		appendIfNotPresent "$HOME/.zshrc" "export PATH=\"\$HOME/.local/bin:\$PATH\""
-		appendIfNotPresent "$HOME/.zshrc" "eval \"\$(duckman completion zsh)\""
+		appendIfNotPresent "$HOME/.zshrc" "# duckman completion (requires compinit)"
+		appendIfNotPresent "$HOME/.zshrc" '(( $+functions[compdef] )) && eval "$(duckman completion zsh)"'
+
+		echo "Note (zsh): duckman autocomplete needs zsh completion enabled (compinit)."
+		echo "If autocomplete doesn't work, add this above the duckman completion line in ~/.zshrc:"
+		echo "  autoload -Uz compinit && compinit"
 	fi
 
 	# Fish
