@@ -1,0 +1,33 @@
+{
+  "version": "v1.4.4",
+  "name": "v1.4.4 Bugfix Release",
+  "platforms": {
+    "PlatformLinux": {
+      "ArchitectureX86": {
+        "downloadUrl": "https://github.com/duckdb/duckdb/releases/download/v1.4.4/duckdb_cli-linux-amd64.zip"
+      },
+      "ArchitectureArm64": {
+        "downloadUrl": "https://github.com/duckdb/duckdb/releases/download/v1.4.4/duckdb_cli-linux-arm64.zip"
+      }
+    },
+    "PlatformMac": {
+      "ArchitectureX86": {
+        "downloadUrl": "https://github.com/duckdb/duckdb/releases/download/v1.4.4/duckdb_cli-osx-amd64.zip"
+      },
+      "ArchitectureArm64": {
+        "downloadUrl": "https://github.com/duckdb/duckdb/releases/download/v1.4.4/duckdb_cli-osx-arm64.zip"
+      },
+      "ArchitectureUniversal": {
+        "downloadUrl": "https://github.com/duckdb/duckdb/releases/download/v1.4.4/duckdb_cli-osx-universal.zip"
+      }
+    },
+    "PlatformWindows": {
+      "ArchitectureX86": {
+        "downloadUrl": "https://github.com/duckdb/duckdb/releases/download/v1.4.4/duckdb_cli-windows-amd64.zip"
+      },
+      "ArchitectureArm64": {
+        "downloadUrl": "https://github.com/duckdb/duckdb/releases/download/v1.4.4/duckdb_cli-windows-arm64.zip"
+      }
+    }
+  }
+}
