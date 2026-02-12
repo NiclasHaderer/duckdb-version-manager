@@ -1,3 +1,4 @@
+import re
 import unittest
 
 import duck_vm
@@ -56,6 +57,21 @@ class TestE2E(unittest.TestCase):
     def test_run_nightly(self):
         duck_vm.run_version("nightly", "--version")
         duck_vm.uninstall_version("nightly")
+
+    def test_run_md(self):
+        out = duck_vm.run_version("md", "--version")
+        self.assertRegex(out, r"v\d+\.\d+\.\d+")
+        # extract the resolved version to uninstall
+        match = re.search(r"(v\d+\.\d+\.\d+)", out)
+        if match:
+            duck_vm.uninstall_version(match.group(1))
+
+    def test_run_latest(self):
+        remote_versions = duck_vm.list_remote_versions()
+        expected_latest = remote_versions[1]  # index 0 is nightly
+        out = duck_vm.run_version("latest", "--version")
+        self.assertIn(expected_latest, out)
+        duck_vm.uninstall_version(expected_latest)
 
     def test_run_invalid_version(self):
         try:

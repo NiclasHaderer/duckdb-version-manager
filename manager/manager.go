@@ -35,6 +35,11 @@ type versionManagerImpl struct {
 }
 
 func (v *versionManagerImpl) InstallVersion(version string) stacktrace.Error {
+	version, rErr := v.resolveVersion(version)
+	if rErr != nil {
+		return rErr
+	}
+
 	release, err := v.client.GetRelease(version)
 	if err != nil {
 		return err
@@ -71,7 +76,7 @@ func (v *versionManagerImpl) InstallVersion(version string) stacktrace.Error {
 
 func (v *versionManagerImpl) UninstallVersion(unreliableVersion string) stacktrace.Error {
 	if !v.VersionIsInstalled(unreliableVersion) {
-		return stacktrace.NewF("Version '%s' not installed", unreliableVersion)
+		return stacktrace.NewF("Version '%s' not installed. Aliases like 'md' or 'latest' are not supported for uninstalling.", unreliableVersion)
 	}
 
 	release, _ := v.GetLocalReleaseInfo(unreliableVersion)
@@ -114,6 +119,12 @@ func (v *versionManagerImpl) SetDefaultVersion(version *string) stacktrace.Error
 		v.localConfig.DefaultVersion = nil
 		return v.saveConfig()
 	}
+
+	resolved, rErr := v.resolveVersion(*version)
+	if rErr != nil {
+		return rErr
+	}
+	version = &resolved
 
 	if !v.VersionIsInstalled(*version) {
 		err := v.InstallVersion(*version)
@@ -192,6 +203,11 @@ func execUnix(args []string) stacktrace.Error {
 }
 
 func (v *versionManagerImpl) Version(version string, args []string) stacktrace.Error {
+	version, rErr := v.resolveVersion(version)
+	if rErr != nil {
+		return rErr
+	}
+
 	if !v.VersionIsInstalled(version) {
 		err := v.InstallVersion(version)
 		if err != nil {
@@ -253,7 +269,9 @@ func (v *versionManagerImpl) RemoteVersionList(_ *cobra.Command, _ []string, _ s
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 
-	return toVersionList(remoteVersions), cobra.ShellCompDirectiveKeepOrder
+	versions := toVersionList(remoteVersions)
+	versions = append(versions, "latest", "md")
+	return versions, cobra.ShellCompDirectiveKeepOrder
 }
 
 func (v *versionManagerImpl) ShowUpdateWarning() {
