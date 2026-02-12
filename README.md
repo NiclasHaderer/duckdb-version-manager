@@ -22,17 +22,28 @@ Invoke-Expression (Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubus
 
 ```bash
 # Install a specific version of DuckDB (this does not set the version as default)
-duckman install 0.10.2
+duckman install v1.4.4
 
 # Set a version of DuckDB as default one to use -> now running duckdb will run this version
-duckman default 0.10.2
+duckman default v1.4.4
 
 # Run a version of DuckDB
 duckman run nightly
 
+# Run the latest stable version
+duckman run latest
+
+# Run the MotherDuck-compatible version
+duckman run md
+
 # List available DuckDB versions
 duckman list remote
 ```
+
+In place of a specific version number, you can use:
+- `latest` — the latest stable release
+- `md` — the latest DuckDB version supported by [MotherDuck](https://motherduck.com)
+- `nightly` — the nightly build
 
 Generally, installing a version before running it or setting it as default is not necessary.
 If you want to run a version that is not installed, duckman will automatically download and install it for you.
