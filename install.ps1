@@ -73,6 +73,8 @@ function Print-ShellHelp {
 }
 
 
+Download-Duckman
+
 while ($true) {
     $yn = Read-Host "Do you want duckman to setup autocomplete and PATH for you? (y/n)"
     switch ($yn.ToLower()) {
