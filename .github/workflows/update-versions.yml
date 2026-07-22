@@ -24,6 +24,8 @@ jobs:
         poetry install
 
     - name: Run extract_releases script
+      env:
+        GITHUB_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: poetry run python scripts/extract_releases.py
 
     - name: Commit and Push changes
