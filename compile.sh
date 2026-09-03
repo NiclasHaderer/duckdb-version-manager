@@ -35,8 +35,8 @@ for i in ${!GOOS_ARRAY[@]}; do
 
 	OUTPUT_NAME="$OUTPUT_DIR/$BINARY_NAME-$GOOS-$GOARCH"
 
-	# Cross-compile
-	env GOOS="$GOOS" GOARCH="$GOARCH" go build -ldflags "-X 'duckdb-version-manager/config.Version=$VERSION'" -o "$OUTPUT_NAME"
+	# Cross-compile. cgo has to be off, otherwise go picks the host C toolchain for every target.
+	env CGO_ENABLED=0 GOOS="$GOOS" GOARCH="$GOARCH" go build -ldflags "-X 'duckdb-version-manager/config.Version=$VERSION'" -o "$OUTPUT_NAME"
 
 	# Check if cross-compilation was successful
 	if [ $? -eq 0 ]; then

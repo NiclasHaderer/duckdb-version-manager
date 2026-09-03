@@ -35,16 +35,15 @@ type versionManagerImpl struct {
 }
 
 func (v *versionManagerImpl) InstallVersion(version string) stacktrace.Error {
-	version, rErr := v.resolveVersion(version)
+	release, rErr := v.resolveRelease(version)
 	if rErr != nil {
 		return rErr
 	}
 
-	release, err := v.client.GetRelease(version)
-	if err != nil {
-		return err
-	}
+	return v.installRelease(release)
+}
 
+func (v *versionManagerImpl) installRelease(release *models.VersionInformation) stacktrace.Error {
 	downloadUrl, err := utils.GetDownloadUrlFrom(release)
 	if err != nil {
 		return err
@@ -76,7 +75,7 @@ func (v *versionManagerImpl) InstallVersion(version string) stacktrace.Error {
 
 func (v *versionManagerImpl) UninstallVersion(unreliableVersion string) stacktrace.Error {
 	if !v.VersionIsInstalled(unreliableVersion) {
-		return stacktrace.NewF("Version '%s' not installed. Aliases like 'md' or 'latest' are not supported for uninstalling.", unreliableVersion)
+		return stacktrace.NewF("Version '%s' not installed. Aliases like 'md', 'latest' or 'alpha' are not supported for uninstalling, run 'duckman list local' to see the installed versions.", unreliableVersion)
 	}
 
 	release, _ := v.GetLocalReleaseInfo(unreliableVersion)
@@ -120,20 +119,19 @@ func (v *versionManagerImpl) SetDefaultVersion(version *string) stacktrace.Error
 		return v.saveConfig()
 	}
 
-	resolved, rErr := v.resolveVersion(*version)
+	release, rErr := v.resolveRelease(*version)
 	if rErr != nil {
 		return rErr
 	}
-	version = &resolved
 
-	if !v.VersionIsInstalled(*version) {
-		err := v.InstallVersion(*version)
+	if !v.VersionIsInstalled(release.Version) {
+		err := v.installRelease(release)
 		if err != nil {
 			return err
 		}
 	}
 
-	versionToInstall, _ := v.GetLocalReleaseInfo(*version)
+	versionToInstall, _ := v.GetLocalReleaseInfo(release.Version)
 	err := v.symlink(versionToInstall.Location, config.DefaultDuckdbFile)
 	if err != nil {
 		return err
@@ -203,29 +201,30 @@ func execUnix(args []string) stacktrace.Error {
 }
 
 func (v *versionManagerImpl) Version(version string, args []string) stacktrace.Error {
-	version, rErr := v.resolveVersion(version)
+	release, rErr := v.resolveRelease(version)
 	if rErr != nil {
 		return rErr
 	}
 
-	if !v.VersionIsInstalled(version) {
-		err := v.InstallVersion(version)
+	if !v.VersionIsInstalled(release.Version) {
+		err := v.installRelease(release)
 		if err != nil {
 			return err
 		}
 	}
 
-	release, _ := v.GetLocalReleaseInfo(version)
-	installationTime, _ := time.Parse(time.RFC3339, release.InstallationDate)
+	localRelease, _ := v.GetLocalReleaseInfo(release.Version)
+	installationTime, _ := time.Parse(time.RFC3339, localRelease.InstallationDate)
 	isOlderThanOneDay := time.Now().Sub(installationTime) > 24*time.Hour
-	if release.Version == "nightly" && isOlderThanOneDay {
-		err := v.InstallVersion(version)
+	// Nightly is the only channel that keeps its name as version, so it can go stale in place.
+	if localRelease.Version == "nightly" && isOlderThanOneDay {
+		err := v.installRelease(release)
 		if err != nil {
 			return err
 		}
 	}
 
-	args = utils.Prepend(args, release.Location)
+	args = utils.Prepend(args, localRelease.Location)
 	return exec(args)
 }
 
@@ -270,7 +269,7 @@ func (v *versionManagerImpl) RemoteVersionList(_ *cobra.Command, _ []string, _ s
 	}
 
 	versions := toVersionList(remoteVersions)
-	versions = append(versions, "latest", "md")
+	versions = append(versions, "latest", "md", "alpha")
 	return versions, cobra.ShellCompDirectiveKeepOrder
 }
 

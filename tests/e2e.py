@@ -58,6 +58,12 @@ class TestE2E(unittest.TestCase):
         duck_vm.run_version("nightly", "--version")
         duck_vm.uninstall_version("nightly")
 
+    def test_run_alpha(self):
+        out = duck_vm.run_version("alpha", "--version")
+        match = re.search(r"(v\d+\.\d+\.\d+-alpha\d+)", out)
+        self.assertIsNotNone(match)
+        duck_vm.uninstall_version(match.group(1))
+
     def test_run_md(self):
         out = duck_vm.run_version("md", "--version")
         self.assertRegex(out, r"v\d+\.\d+\.\d+")

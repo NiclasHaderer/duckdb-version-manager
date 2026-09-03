@@ -6,20 +6,26 @@ NIGHTLY_RELEASE: Release = {
     "platforms": {
         "PlatformWindows": {
             "ArchitectureX86": {
-                "downloadUrl": "https://artifacts.duckdb.org/latest/duckdb-binaries-windows.zip",
+                "downloadUrl": "https://artifacts.duckdb.org/latest/duckdb-cli-windows-amd64.tar.gz",
+            },
+            "ArchitectureArm64": {
+                "downloadUrl": "https://artifacts.duckdb.org/latest/duckdb-cli-windows-arm64.tar.gz",
             },
         },
         "PlatformLinux": {
             "ArchitectureX86": {
-                "downloadUrl": "https://artifacts.duckdb.org/latest/duckdb-binaries-linux-amd64.zip",
+                "downloadUrl": "https://artifacts.duckdb.org/latest/duckdb-cli-linux-amd64.tar.gz",
             },
             "ArchitectureArm64": {
-                "downloadUrl": "https://artifacts.duckdb.org/latest/duckdb-binaries-linux-arm64.zip",
+                "downloadUrl": "https://artifacts.duckdb.org/latest/duckdb-cli-linux-arm64.tar.gz",
             },
         },
         "PlatformMac": {
-            "ArchitectureUniversal": {
-                "downloadUrl": "https://artifacts.duckdb.org/latest/duckdb-binaries-osx.zip",
+            "ArchitectureX86": {
+                "downloadUrl": "https://artifacts.duckdb.org/latest/duckdb-cli-osx-amd64.tar.gz",
+            },
+            "ArchitectureArm64": {
+                "downloadUrl": "https://artifacts.duckdb.org/latest/duckdb-cli-osx-arm64.tar.gz",
             },
         },
     },

@@ -30,6 +30,9 @@ duckman default v1.4.4
 # Run a version of DuckDB
 duckman run nightly
 
+# Run the latest alpha build
+duckman run alpha
+
 # Run the latest stable version
 duckman run latest
 
@@ -44,6 +47,7 @@ In place of a specific version number, you can use:
 - `latest` — the latest stable release
 - `md` — the latest DuckDB version supported by [MotherDuck](https://motherduck.com)
 - `nightly` — the nightly build
+- `alpha` — the latest alpha build
 
 Generally, installing a version before running it or setting it as default is not necessary.
 If you want to run a version that is not installed, duckman will automatically download and install it for you.

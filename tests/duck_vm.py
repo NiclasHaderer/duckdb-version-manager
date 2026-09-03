@@ -27,7 +27,7 @@ def install_version(version: str) -> str:
 
 def list_local_versions(print_output=False) -> list[str]:
     out = run_process("list", "local")
-    regex = re.compile(r"^.*?((?:\d|\.|v){3,}|nightly)", re.M)
+    regex = re.compile(r"^.*?((?:\d|\.|v){3,}(?:-[A-Za-z0-9.]+)?|nightly)", re.M)
     installed_versions = re.findall(regex, out)
     if print_output:
         print(out)
@@ -37,7 +37,7 @@ def list_local_versions(print_output=False) -> list[str]:
 
 def list_remote_versions() -> list[str]:
     out = run_process("list", "remote")
-    regex = re.compile(r"^.*?((?:\d|\.|v){3,}|nightly)", re.M)
+    regex = re.compile(r"^.*?((?:\d|\.|v){3,}(?:-[A-Za-z0-9.]+)?|nightly)", re.M)
     remote_versions = re.findall(regex, out)
     return remote_versions
 
