@@ -31,7 +31,7 @@ jobs:
       - name: Setup go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.22.0
+          go-version: 1.27.1
 
       - name: Run compile script
         run: |
