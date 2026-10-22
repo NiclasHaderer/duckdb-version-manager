@@ -77,8 +77,6 @@ def save_duckdb_releases():
     version_list: VersionList = {}
     for release in releases:
         tag_name = release.tag_name
-        version_list[tag_name] = f"tags/{tag_name}.json"
-
         serializable_release: Release = {
             "version": tag_name,
             "name": release.title,
@@ -97,6 +95,7 @@ def save_duckdb_releases():
 
         with open(VERSIONS_INDIVIDUAL_FOLDER / f"{tag_name}.json", "w") as f:
             f.write(json.dumps(serializable_release, indent=2))
+        version_list[tag_name] = f"tags/{tag_name}.json"
 
     with open(VERSIONS_INDIVIDUAL_FOLDER / f"nightly.json", "w") as f:
         f.write(json.dumps(NIGHTLY_RELEASE, indent=2))
