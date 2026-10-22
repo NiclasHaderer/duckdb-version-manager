@@ -19,15 +19,11 @@ jobs:
       - name: Add .local/bin to PATH
         run: echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
+      - name: Set up uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
 
       - name: Install dependencies
-        run: |
-          pip install poetry
-          poetry install
+        run: uv sync --locked
 
       - name: Setup go
         uses: actions/setup-go@v5
@@ -35,4 +31,4 @@ jobs:
           go-version: 1.27.1
 
       - name: Run test
-        run: poetry run python tests/e2e.py
+        run: uv run python tests/e2e.py

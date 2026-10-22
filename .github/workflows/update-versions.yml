@@ -13,20 +13,16 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+    - name: Set up uv
+      uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
 
     - name: Install dependencies
-      run: |
-        pip install poetry
-        poetry install
+      run: uv sync --locked
 
     - name: Run extract_releases script
       env:
         GITHUB_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: poetry run python scripts/extract_releases.py
+      run: uv run python scripts/extract_releases.py
 
     - name: Commit and Push changes
       run: |

@@ -1,22 +1,21 @@
-[tool.poetry]
+[project]
 name = "duckdb-version-manager"
 version = "0.1.0"
 description = ""
-authors = ["Niclas Haderer <niclas.haderer.dev@gmail.com>"]
+authors = [{ name = "Niclas Haderer", email = "niclas.haderer.dev@gmail.com" }]
 readme = "README.md"
-packages = [
-    { include = "scripts" }
+requires-python = ">=3.11"
+dependencies = [
+    "pygithub>=2.2.0,<3",
+    "black>=24.2.0,<25",
+    "httpx>=0.27.0,<0.28",
+    "coverage>=7.4.3,<8",
 ]
 
-[tool.poetry.dependencies]
-python = "^3.11"
-pygithub = "^2.2.0"
-black = "^24.2.0"
-httpx = "^0.27.0"
-coverage = "^7.4.3"
-
-
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.12,<0.13"]
+build-backend = "uv_build"
 
+[tool.uv.build-backend]
+module-name = "scripts"
+module-root = ""

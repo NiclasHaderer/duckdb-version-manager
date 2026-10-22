@@ -21,6 +21,8 @@
 go.work
 .idea
 __pycache__
+.venv
+.direnv
 bin
 .Ds_Store
 ignore.py
