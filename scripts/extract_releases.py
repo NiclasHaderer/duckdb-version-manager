@@ -79,7 +79,7 @@ def save_duckdb_releases():
         tag_name = release.tag_name
         serializable_release: Release = {
             "version": tag_name,
-            "name": release.title,
+            "name": release.name,
             "platforms": defaultdict(dict),
         }
         for asset in release.get_assets():
@@ -123,7 +123,7 @@ def save_latest_duck_vm_release():
 
     serializable_release: Release = {
         "version": latest_release.tag_name,
-        "name": latest_release.title,
+        "name": latest_release.name,
         "platforms": defaultdict(dict),
     }
     for asset in latest_release.get_assets():
