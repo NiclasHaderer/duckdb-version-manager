@@ -23,8 +23,6 @@ from scripts.nightly import NIGHTLY_RELEASE
 
 VERSIONS_BASE_FOLDER = Path(__file__).parent.parent / "versions"
 VERSIONS_INDIVIDUAL_FOLDER = VERSIONS_BASE_FOLDER / "tags"
-shutil.rmtree(VERSIONS_BASE_FOLDER)
-os.makedirs(VERSIONS_INDIVIDUAL_FOLDER, exist_ok=True)
 
 auth_token = os.environ.get("GITHUB_AUTH_TOKEN")
 
@@ -41,7 +39,11 @@ def get_all_releases_from(repo_name: str) -> PaginatedList[GitRelease]:
 
 
 def get_asset_type_from_name(asset_name: str, mode: Literal["duckman", "duck-db"]) -> AssetInformation | None:
-    if mode == "duck-db" and (not asset_name.endswith(".zip") or "duckdb_cli" not in asset_name):
+    if mode == "duck-db" and not (
+        asset_name.startswith(("duckdb_cli-", "duckdb-cli-"))
+        and asset_name.endswith((".zip", ".tar.gz"))
+        and "musl" not in asset_name
+    ):
         return None
 
     if mode == "duckman" and asset_name.endswith(".zip"):
@@ -139,6 +141,8 @@ def save_latest_duck_vm_release():
 
 
 def main():
+    shutil.rmtree(VERSIONS_BASE_FOLDER)
+    os.makedirs(VERSIONS_INDIVIDUAL_FOLDER, exist_ok=True)
     validate_nightly_urls(NIGHTLY_RELEASE)
     save_latest_duck_vm_release()
     save_duckdb_releases()
