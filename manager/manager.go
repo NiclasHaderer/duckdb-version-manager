@@ -6,7 +6,6 @@ import (
 	"duckdb-version-manager/models"
 	"duckdb-version-manager/stacktrace"
 	"duckdb-version-manager/utils"
-	"encoding/json"
 	"fmt"
 	"github.com/hashicorp/go-version"
 	"github.com/spf13/cobra"
@@ -152,16 +151,7 @@ func (v *versionManagerImpl) symlink(from string, to string) stacktrace.Error {
 }
 
 func (v *versionManagerImpl) saveConfig() stacktrace.Error {
-	configAsBytes, err := json.MarshalIndent(v.localConfig, "", "  ")
-	if err != nil {
-		return stacktrace.Wrap(err)
-	}
-
-	err = os.WriteFile(config.File, configAsBytes, 0700)
-	if err != nil {
-		return stacktrace.Wrap(err)
-	}
-	return nil
+	return config.Save(v.localConfig)
 }
 
 func exec(args []string) stacktrace.Error {

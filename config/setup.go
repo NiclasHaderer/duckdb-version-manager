@@ -5,6 +5,7 @@ import (
 	"duckdb-version-manager/stacktrace"
 	"encoding/json"
 	"os"
+	"path/filepath"
 )
 
 func saveEmtpyConfig() stacktrace.Error {
@@ -13,29 +14,41 @@ func saveEmtpyConfig() stacktrace.Error {
 	_ = os.Remove(DefaultDuckdbFile)
 	EnsureFoldersExist()
 
-	emptyConfig := models.LocalConfig{
+	return Save(models.LocalConfig{
 		LocalInstallations: make(models.LocalInstallations),
 		DefaultVersion:     nil,
 		Version:            Version,
-	}
-	serialized, _ := json.MarshalIndent(emptyConfig, "", "  ")
-	err := os.WriteFile(File, serialized, 0600)
-	return stacktrace.Wrap(err)
+	})
 }
 
 func CreateIfNotExists() stacktrace.Error {
 	if _, err := os.Stat(File); os.IsNotExist(err) {
 		return saveEmtpyConfig()
 	}
+	return nil
+}
 
-	// Check if the config file is empty
-	bytes, err := os.ReadFile(File)
+// Save replaces the config file via rename instead of truncating it in place. Every duckman invocation, including the
+// shell completion sourced on each shell start, reads the config, so concurrent processes must never observe it empty
+// or half-written.
+func Save(config any) stacktrace.Error {
+	serialized, err := json.MarshalIndent(config, "", "  ")
 	if err != nil {
 		return stacktrace.Wrap(err)
 	}
-	if len(bytes) == 0 {
-		return saveEmtpyConfig()
-	}
 
-	return nil
+	tmp, err := os.CreateTemp(Dir, filepath.Base(File)+".*.tmp")
+	if err != nil {
+		return stacktrace.Wrap(err)
+	}
+	defer os.Remove(tmp.Name())
+
+	if _, err := tmp.Write(serialized); err != nil {
+		tmp.Close()
+		return stacktrace.Wrap(err)
+	}
+	if err := tmp.Close(); err != nil {
+		return stacktrace.Wrap(err)
+	}
+	return stacktrace.Wrap(os.Rename(tmp.Name(), File))
 }

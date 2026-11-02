@@ -36,6 +36,7 @@ func Run() stacktrace.Error {
 		return stacktrace.NewF("The config file is from a newer version of duckman. This should not happen! Please update duckman to the latest version using the install script.")
 	}
 
+	migrated := false
 	for _, migration := range migrations {
 		if migration.ToVersion.LessThanOrEqual(currentVersion) {
 			continue
@@ -45,17 +46,11 @@ func Run() stacktrace.Error {
 			return stacktrace.NewF("Migration from version %s to version %s failed: %s", currentVersion.String(), migration.ToVersion.String(), err.Error())
 		}
 		currentVersion = &migration.ToVersion
+		migrated = true
 	}
 
-	// Save the new config
-	serialized, err := json.MarshalIndent(untypedConfig, "", "  ")
-	if err != nil {
-		return stacktrace.Wrap(err)
+	if !migrated {
+		return nil
 	}
-
-	err = os.WriteFile(config.File, serialized, 0600)
-	if err != nil {
-		return stacktrace.Wrap(err)
-	}
-	return nil
+	return config.Save(untypedConfig)
 }
