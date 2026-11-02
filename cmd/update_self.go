@@ -3,10 +3,8 @@ package cmd
 import (
 	"duckdb-version-manager/api"
 	"duckdb-version-manager/config"
-	"duckdb-version-manager/stacktrace"
 	"duckdb-version-manager/utils"
 	"github.com/spf13/cobra"
-	"os"
 	"time"
 )
 
@@ -30,8 +28,8 @@ var updateSelfCmd = &cobra.Command{
 			utils.ExitWithError(err)
 		}
 
-		if err := os.WriteFile(config.DuckmanBinaryFile, body, 0700); err != nil {
-			utils.ExitWithError(stacktrace.Wrap(err))
+		if err := utils.WriteFileAtomic(config.DuckmanBinaryFile, body, 0700); err != nil {
+			utils.ExitWithError(err)
 		}
 	},
 }

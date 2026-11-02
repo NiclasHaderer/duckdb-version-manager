@@ -58,8 +58,8 @@ func (v *versionManagerImpl) installRelease(release *models.VersionInformation) 
 	}
 
 	fileLocation := config.VersionDir + "/" + config.DuckDBName + "-" + release.Version
-	if err := os.WriteFile(fileLocation, duckDb, 0700); err != nil {
-		return stacktrace.Wrap(err)
+	if err := utils.WriteFileAtomic(fileLocation, duckDb, 0700); err != nil {
+		return err
 	}
 
 	installTime, _ := time.Now().MarshalText()

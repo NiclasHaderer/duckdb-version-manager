@@ -3,9 +3,9 @@ package config
 import (
 	"duckdb-version-manager/models"
 	"duckdb-version-manager/stacktrace"
+	"duckdb-version-manager/utils"
 	"encoding/json"
 	"os"
-	"path/filepath"
 )
 
 func saveEmtpyConfig() stacktrace.Error {
@@ -37,18 +37,5 @@ func Save(config any) stacktrace.Error {
 		return stacktrace.Wrap(err)
 	}
 
-	tmp, err := os.CreateTemp(Dir, filepath.Base(File)+".*.tmp")
-	if err != nil {
-		return stacktrace.Wrap(err)
-	}
-	defer os.Remove(tmp.Name())
-
-	if _, err := tmp.Write(serialized); err != nil {
-		tmp.Close()
-		return stacktrace.Wrap(err)
-	}
-	if err := tmp.Close(); err != nil {
-		return stacktrace.Wrap(err)
-	}
-	return stacktrace.Wrap(os.Rename(tmp.Name(), File))
+	return utils.WriteFileAtomic(File, serialized, 0600)
 }
