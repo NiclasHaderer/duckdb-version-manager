@@ -28,7 +28,7 @@ var updateSelfCmd = &cobra.Command{
 			utils.ExitWithError(err)
 		}
 
-		if err := utils.WriteFileAtomic(config.DuckmanBinaryFile, body, 0700); err != nil {
+		if err := utils.ReplaceExecutable(config.DuckmanBinaryFile, body, config.OldBinariesDir); err != nil {
 			utils.ExitWithError(err)
 		}
 	},

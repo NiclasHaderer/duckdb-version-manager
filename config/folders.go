@@ -11,6 +11,7 @@ import (
 var File string
 var Dir string
 var VersionDir string
+var OldBinariesDir string
 var DefaultDuckdbFile string
 var DuckmanBinaryFile string
 var DuckDBName = "duckdb"
@@ -23,6 +24,7 @@ func init() {
 		utils.ExitWithError(stacktrace.New("Version not set using compile flags. Use -ldflags \"-X 'duckdb-version-manager/config.Version=1.0.0'\" to set the version."))
 	}
 	EnsureFoldersExist()
+	utils.RemoveOldExecutables(OldBinariesDir)
 }
 
 func EnsureFoldersExist() {
@@ -34,6 +36,7 @@ func EnsureFoldersExist() {
 	Dir = homeDir + "/.config/duckman"
 	File = Dir + "/config.json"
 	VersionDir = Dir + "/versions"
+	OldBinariesDir = Dir + "/old-binaries"
 	binaryDir := homeDir + "/.local/bin"
 	DefaultDuckdbFile = binaryDir + "/" + DuckDBName
 	DuckmanBinaryFile = binaryDir + "/duckman"
@@ -47,6 +50,10 @@ func EnsureFoldersExist() {
 	err = os.MkdirAll(VersionDir, 0700)
 	if err != nil {
 		log.Fatalf("Error creating version directory: %s", err)
+	}
+	err = os.MkdirAll(OldBinariesDir, 0700)
+	if err != nil {
+		log.Fatalf("Error creating old binaries directory: %s", err)
 	}
 	err = os.MkdirAll(binaryDir, 0700)
 	if err != nil {

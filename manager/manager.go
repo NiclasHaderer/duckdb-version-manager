@@ -58,7 +58,7 @@ func (v *versionManagerImpl) installRelease(release *models.VersionInformation) 
 	}
 
 	fileLocation := config.VersionDir + "/" + config.DuckDBName + "-" + release.Version
-	if err := utils.WriteFileAtomic(fileLocation, duckDb, 0700); err != nil {
+	if err := utils.ReplaceExecutable(fileLocation, duckDb, config.OldBinariesDir); err != nil {
 		return err
 	}
 

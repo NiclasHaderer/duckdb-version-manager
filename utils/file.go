@@ -1,10 +1,15 @@
 package utils
 
 import (
+	"duckdb-version-manager/models"
 	"duckdb-version-manager/stacktrace"
+	"errors"
+	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 func RemoveFileOrDie(file string) {
@@ -16,8 +21,7 @@ func RemoveFileOrDie(file string) {
 	}
 }
 
-// WriteFileAtomic replaces path via rename instead of truncating it, so readers never see a partial file
-// and an executable that is currently running (ETXTBSY on Linux) can still be replaced.
+// Renames instead of truncating, so readers never see a partial file and running executables avoid ETXTBSY.
 func WriteFileAtomic(path string, data []byte, perm os.FileMode) stacktrace.Error {
 	tmp, err := os.CreateTemp(filepath.Dir(path), filepath.Base(path)+".*.tmp")
 	if err != nil {
@@ -37,6 +41,38 @@ func WriteFileAtomic(path string, data []byte, perm os.FileMode) stacktrace.Erro
 		return stacktrace.Wrap(err)
 	}
 	return stacktrace.Wrap(os.Rename(tmp.Name(), path))
+}
+
+// Windows cannot replace a running .exe but can rename it, so it is moved into oldDir first. Elsewhere that step
+// is skipped because it would briefly leave path missing.
+func ReplaceExecutable(path string, data []byte, oldDir string) stacktrace.Error {
+	if GetDeviceInfo().Platform == models.PlatformWindows {
+		if err := moveAside(path, oldDir); err != nil {
+			return err
+		}
+	}
+	if err := WriteFileAtomic(path, data, 0700); err != nil {
+		return err
+	}
+	RemoveOldExecutables(oldDir)
+	return nil
+}
+
+func moveAside(path string, oldDir string) stacktrace.Error {
+	target := filepath.Join(oldDir, fmt.Sprintf("%s.%d", filepath.Base(path), time.Now().UnixNano()))
+	err := os.Rename(path, target)
+	if errors.Is(err, fs.ErrNotExist) {
+		return nil
+	}
+	return stacktrace.Wrap(err)
+}
+
+// Errors are ignored: binaries still running on Windows cannot be deleted yet and are retried on the next run.
+func RemoveOldExecutables(oldDir string) {
+	entries, _ := os.ReadDir(oldDir)
+	for _, entry := range entries {
+		_ = os.Remove(filepath.Join(oldDir, entry.Name()))
+	}
 }
 
 func CopyFile(src, dst string) stacktrace.Error {
